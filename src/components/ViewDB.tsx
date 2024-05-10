@@ -9,7 +9,8 @@ export const ViewDB = () => {
   const load = async () => {
     // create database
     const db = await createRxDatabase({
-      name: "patientDb",
+      name: "patientdb",
+      ignoreDuplicate: true,
       storage: getRxStorageDexie(),
     });
 
@@ -24,7 +25,7 @@ export const ViewDB = () => {
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "number",
+                    "type": "string",
                     "maxLength": 100 // <- the primary key must have set maxLength
                 },
                 "name": {
