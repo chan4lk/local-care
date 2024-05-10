@@ -1,4 +1,4 @@
-import { Dashboard } from "../components/Dashboard.1"
+import { Dashboard } from "../components/Dashboard"
 
 export const Root = () => {
     return <Dashboard />
