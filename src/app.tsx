@@ -4,7 +4,7 @@ import React from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { addRxPlugin } from 'rxdb';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
-import { NewPatient } from "./routes/NewPatient";
+import NewPatient from "./routes/NewPatient";
 import { ExistingPatient } from "./routes/ExistingPatient";
 
 addRxPlugin(RxDBDevModePlugin);
