@@ -31,4 +31,4 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: windows-build
-        path: ${{ github.workspace }}\local-care\local-care\out\make
+        path: ${{ github.workspace }}\out\make
