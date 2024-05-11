@@ -1,6 +1,8 @@
 import React from "react";
-import { ErrorMessage, Formik } from "formik";
+import { Formik } from "formik";
 import * as Yup from "yup";
+import { SimpleInput } from "../components/SimpleInput";
+import { SimpleSelect } from "../components/SimpleSelect";
 
 const validationSchema = Yup.object().shape({
   fullname: Yup.string()
@@ -20,7 +22,9 @@ const validationSchema = Yup.object().shape({
 
 const NewPatient = () => (
   <div className="container mx-auto">
-    <h1 className="text-3xl font-bold mb-8">Add New Patient!</h1>
+    <div className="flex items-center justify-center">
+      <h1 className="text-3xl font-bold mb-8">Add New Patient!</h1>
+      </div>
     <Formik
       initialValues={{
         fullname: "",
@@ -39,8 +43,6 @@ const NewPatient = () => (
     >
       {({
         values,
-        errors,
-        touched,
         handleChange,
         handleBlur,
         handleSubmit,
@@ -48,120 +50,49 @@ const NewPatient = () => (
         /* and other goodies */
       }) => (
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="fullname"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Full Name
-            </label>
-            <input
-              name="fullname"
-              id="fullname"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.fullname}
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-            <ErrorMessage
-              name="fullname"
-              className="text-red-600"
-              component="div"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="mobile"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Mobile
-            </label>
-            <input
-              name="mobile"
-              id="mobile"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.mobile}
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-            <ErrorMessage
-              name="mobile"
-              className="text-red-600"
-              component="div"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="treatment_type"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Treatment Type
-            </label>
-            <select
-              id="treatment_type"
-              name="treatment_type"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.treatment_type}
-              className="mt-1 block w-full py-2 px-3 border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="">Select</option>
-              <option value="dental">Dental</option>
-              <option value="dermatology">Dermatology</option>
-              <option value="general_medicine">General Medicine</option>
-              {/* Add more treatment types as needed */}
-            </select>
-            <ErrorMessage
-              name="treatment_type"
-              className="text-red-600"
-              component="div"
-            />
-          </div>
+          <SimpleInput
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            values={values}
+            label="Full Name"
+            field="fullname"
+          />
+          <SimpleInput
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            values={values}
+            label="Mobile"
+            field="mobile"
+          />
+          <SimpleSelect
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            values={values}
+            label="Treatment Type"
+            field="treatment_type"
+            options={[
+              { value: "", label: "Select" },
+              { value: "dental", label: "Dental" },
+              { value: "dermatology", label: "Dermatology" },
+              { value: "general_medicine", label: "General Medicine" },
+            ]}
+          />
+
           <div className="flex items-center justify-between">
-            <div>
-              <label
-                htmlFor="total_amount"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Total Amount
-              </label>
-              <input
-                type="number"
-                id="total_amount"
-                name="total_amount"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.total_amount}
-                className="mt-1 block w-full py-2 px-3 border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              <ErrorMessage
-                name="total_amount"
-                className="text-red-600"
-                component="div"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="amount_paid"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Amount Paid
-              </label>
-              <input
-                type="number"
-                id="amount_paid"
-                name="amount_paid"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.amount_paid}
-                className="mt-1 block w-full py-2 px-3 border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              />
-              <ErrorMessage
-                name="amount_paid"
-                className="text-red-600"
-                component="div"
-              />
-            </div>
+            <SimpleInput
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              values={values}
+              label="Total Amount"
+              field="total_amount"
+            />
+            <SimpleInput
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              values={values}
+              label="Amount Paid"
+              field="amount_paid"
+            />
           </div>
           <div className="flex items-center">
             <label
@@ -174,7 +105,7 @@ const NewPatient = () => (
               id="amount_due"
               className="text-lg font-semibold text-gray-900"
             >
-              ${0}
+              ${(parseFloat(values.total_amount || '0') - parseFloat(values.amount_paid || '0')).toFixed(2)}
             </span>
           </div>
           <div>
