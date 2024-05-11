@@ -1,28 +1,8 @@
-import { createRoot } from "react-dom/client";
-import { Root } from "./routes/Root";
 import React from "react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { addRxPlugin } from 'rxdb';
-import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
-import NewPatient from "./routes/NewPatient";
-import ExistingPatient from "./routes/ExistingPatient";
+import { createRoot } from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
 
-addRxPlugin(RxDBDevModePlugin);
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Root />,
-  },
-  {
-    path: "/new",
-    element: <NewPatient />,
-  },
-  {
-    path: "/existing",
-    element: <ExistingPatient />,
-  },
-]);
+import { router } from "./router";
 
 const root = createRoot(document.getElementById("root"));
 
