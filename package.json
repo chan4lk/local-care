@@ -21,12 +21,14 @@
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/plugin-vite": "^7.4.0",
     "@electron/fuses": "^1.8.0",
+    "@swc/core": "^1.5.5",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "autoprefixer": "^10.4.19",
     "electron": "30.0.3",
+    "electron-vite": "^2.2.0",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1",
     "postcss": "^8.4.38",
@@ -47,8 +49,11 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
+    "reflect-metadata": "^0.2.2",
     "rxdb": "^15.19.0",
     "rxjs": "^7.8.1",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.20",
     "yup": "^1.4.0"
   }
 }

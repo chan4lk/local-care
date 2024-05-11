@@ -1,5 +1,10 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import 'reflect-metadata';
 import path from 'path';
+import Database from './database/Database';
+// Right now this specifies a folder where database files will be stored.
+export const defaultStorageFolder = app.getPath('downloads');
+
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -8,6 +13,13 @@ if (require('electron-squirrel-startup')) {
 
 const createWindow = () => {
   // Create the browser window.
+
+  global.database = new Database();
+
+  ipcMain.handle('database:insert',async (event, arg) => {
+    return await Promise.resolve(database.insert(arg));
+  })
+
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -15,6 +27,7 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+  
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {

@@ -18,9 +18,11 @@ const validationSchema = Yup.object().shape({
     .max(Yup.ref("total_amount"), "Amount must not exceed the total amount")
     .required("Required"),
 });
+const NewPatient = () => {
 
-const NewPatient = () => (
-  <div className="container mx-auto">
+  
+
+  return <div className="container mx-auto">
     <div className="flex items-center justify-center">
       <h1 className="text-3xl font-bold mb-8">Add New Patient!</h1>
       </div>
@@ -33,11 +35,14 @@ const NewPatient = () => (
         amount_paid: "",
       }}
       validationSchema={validationSchema}
-      onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          alert(JSON.stringify(values, null, 2));
-          setSubmitting(false);
-        }, 400);
+      onSubmit={async (values, { setSubmitting }) => {
+        const insert = await (window as any).
+                electronAPI.insertPatient({name: 'Chandima' , surname: 'Ranaweeera'});
+
+        console.log('Insert: ');
+        console.table(insert);
+        console.log('Fetch: ');
+        //console.table(await database.fetchAll());
       }}
     >
       {({
@@ -120,6 +125,6 @@ const NewPatient = () => (
       )}
     </Formik>
   </div>
-);
+};
 
 export default NewPatient;
