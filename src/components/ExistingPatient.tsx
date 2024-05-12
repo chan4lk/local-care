@@ -5,10 +5,10 @@ import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { Search } from "./Search";
 import { useState } from "react";
-import Patient from "../database/models/Patient";
+import { IPatient, ITransactionStatus } from "../types/electron-api";
 
 export const ExistingPatient = () => {
-  const [patient, setPatient] = useState<Patient>(null);
+  const [patient, setPatient] = useState<IPatient>(null);
 
   return (
     <div className="container mx-auto">
@@ -24,19 +24,48 @@ export const ExistingPatient = () => {
         <Formik
           initialValues={{
             ...patient,
-            total_amount: patient.total_amount?.toString(),
+            total_amount: patient.invoice.transactions
+              .map((t) => t.amount)
+              .reduce((sum, curent) => sum + curent, 0)
+              .toString(),
             paid_amount: "",
-            previous_paid: patient.paid_amount?.toString(),
+            previous_paid: patient.invoice.transactions
+              .filter((t) => t.status == ITransactionStatus.Paid)
+              .map((t) => t.amount)
+              .reduce((sum, curent) => sum + curent, 0)
+              .toString(),
           }}
           validationSchema={validationSchema}
           onSubmit={async (values, { resetForm }) => {
-            const insert = await window.electronAPI.insertPatient({
-              ...values,
+            const pendingAmount =
+              parseFloat(values.total_amount || "0") -
+              parseFloat(values.previous_paid || "0") -
+              parseFloat(values.paid_amount || "0");
+            const patientDetails = {
               id: patient.id,
-              total_amount: parseFloat(values.total_amount),
-              paid_amount: patient.paid_amount + parseFloat(values.paid_amount)
-            });
-            alert('Payment completed')
+              fullname: values.fullname,
+              mobile: values.mobile,
+              treatment_type: values.treatment_type,
+              invoice: {
+                ...patient.invoice,
+                transactions: [
+                  ...patient.invoice.transactions.filter(t => t.status === ITransactionStatus.Paid),
+                  {
+                    status: ITransactionStatus.Pending,
+                    amount: pendingAmount,
+                    description: "Pending Payment",
+                  },
+                  {
+                    id: patient.invoice.transactions.find(t => t.status === ITransactionStatus.Pending)?.id,
+                    status: ITransactionStatus.Paid,
+                    amount: parseFloat(values.paid_amount || "0"),
+                    description: "Paid Amount",
+                  },
+                ],
+              },
+            } as IPatient;
+            const insert = await window.electronAPI.insertPatient(patientDetails);
+            alert("Payment completed");
             resetForm();
             setPatient(null);
           }}
