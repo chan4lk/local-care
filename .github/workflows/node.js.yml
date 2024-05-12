@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "sqlite-db" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "sqlite-db" ]
+    branches: [ "develop" ]
 
 jobs:
   build:
