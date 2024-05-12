@@ -2,6 +2,9 @@ import path from 'path';
 import { defaultStorageFolder } from '../main';
 import Patient from './models/Patient';
 import { DataSource, Like } from "typeorm"
+import Invoice from './models/Invoice';
+import Transaction from './models/Transaction';
+import { IPatient } from '../types/electron-api';
 export default class Database {
     private connection: DataSource;
 
@@ -13,7 +16,7 @@ export default class Database {
         const AppDataSource = new DataSource({
             type: 'sqlite',
             database: path.join(defaultStorageFolder, 'doc_app.sqlite'),
-            entities: [Patient],
+            entities: [Patient, Invoice, Transaction],
             synchronize: true
         })
 
@@ -27,11 +30,23 @@ export default class Database {
         this.connection = AppDataSource;
     }
 
-    public async insert(patientDetails: Patient): Promise<Patient> {
+    public async insert(patientDetails: IPatient): Promise<Patient> {
         const patientRepository = this.connection.getRepository(Patient);
-        const patient: Patient = patientDetails;
+        const invoiceRepository = this.connection.getRepository(Invoice);
+        const transactionRepository = this.connection.getRepository(Transaction);
 
-        return patientRepository.save(patient);
+        const patient = await patientRepository.save(patientDetails);
+
+        const invoice = patientDetails.invoice as unknown as Invoice;
+        invoice.patient = patient;
+        await invoiceRepository.save(patientDetails.invoice as unknown);
+
+        invoice.transactions.forEach(async element => {
+            element.invoice = invoice;
+            await transactionRepository.save(element);
+        });
+        
+        return patient;
     }
 
     public async fetchByNameOrMobile({ keyword }: { keyword: string }): Promise<Patient[]> {
@@ -42,13 +57,24 @@ export default class Database {
                 where: [
                     { fullname: Like(`${keyword}%`) },
                     { mobile: Like(`${keyword}%`) }
-                ]
+                ],
+                relations: {
+                    invoice: {
+                        transactions: true
+                    }
+                }
             })
     }
 
     public async fetchAll(): Promise<Patient[]> {
         const patientRepository = this.connection.getRepository(Patient);
 
-        return patientRepository.find();
+        return patientRepository.find({
+            relations: {
+                invoice: {
+                    transactions: true
+                }
+            }
+        });
     }
 }

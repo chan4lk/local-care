@@ -7,6 +7,7 @@ export const Search = ({setPatient}: {setPatient: React.Dispatch<any>}) => {
     const text = e.target.value;
     setKeyword(text);
     const patients = await window.electronAPI.search({ keyword: text });
+    console.log(patients)
     setPatients(patients);
   };
   return (
