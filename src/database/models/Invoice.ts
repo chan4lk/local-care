@@ -1,6 +1,7 @@
-import { Entity, Column, JoinTable, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, JoinTable, PrimaryGeneratedColumn, ManyToOne, Relation, JoinColumn, OneToOne, OneToMany } from 'typeorm';
 import Transaction from './Transaction';
 import Auditable from './Auditable';
+import Patient from './Patient';
 
 @Entity()
 export default class Invoice extends Auditable{
@@ -10,19 +11,13 @@ export default class Invoice extends Auditable{
     @Column()
     description?: string;
 
+    @OneToOne(() => Patient, (patient) => patient.invoice)
+    @JoinColumn()
+    patient: Relation<Patient>
+
     @Column('decimal', { precision: 10, scale: 2 })
     total: number;
 
-    @JoinTable({
-        name: 'invoice_transactions',
-        joinColumn: {
-            name: 'invoice_id',
-            referencedColumnName: 'id'
-        },
-        inverseJoinColumn: {
-            name: 'transaction_id',
-            referencedColumnName: 'id'
-        }
-    })
-    transactions: Transaction[];
+    @OneToMany(() => Transaction, (transaction) => transaction.invoice)
+    transactions: Relation<Transaction[]>;
 }

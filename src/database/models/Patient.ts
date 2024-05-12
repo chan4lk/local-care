@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, Index, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Index, ManyToOne, JoinColumn, Relation, OneToOne } from 'typeorm';
 import Auditable from './Auditable';
 import Invoice from './Invoice';
 
@@ -18,6 +18,6 @@ export default class Patient extends Auditable{
     @Column()
     treatment_type: string;
 
-    @ManyToOne(() => Invoice, (invoice) => invoice.id)
-    invoice: Invoice;
+    @OneToOne(() => Invoice, (invoice) => invoice.patient)
+    invoice: Relation<Invoice>
 }

@@ -1,10 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, Relation, JoinTable } from 'typeorm';
 import Auditable from './Auditable';
-
-export enum TransactionStatus {
-    Pending = "pending",
-    Paid = "paid",
-}
+import { ITransactionStatus } from '../../types/electron-api';
+import Invoice from './Invoice';
 
 @Entity()
 export default class Transaction extends Auditable {
@@ -19,8 +16,12 @@ export default class Transaction extends Auditable {
 
     @Column({
         type: "simple-enum",
-        enum: TransactionStatus,
-        default: TransactionStatus.Pending,
+        enum: ITransactionStatus,
+        default: ITransactionStatus.Pending,
     })
-    status: TransactionStatus
+    status: ITransactionStatus
+
+    @ManyToOne(() => Invoice, (invoice) => invoice.transactions)
+    @JoinTable()
+    invoice: Relation<Invoice>
 }

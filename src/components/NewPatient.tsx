@@ -26,7 +26,9 @@ export const NewPatient = () => {
             parseFloat(values.total_amount || "0") -
             parseFloat(values.paid_amount || "0");
           const patient = {
-            ...values,
+            fullname: values.fullname,
+            mobile: values.mobile,
+            treatment_type: values.treatment_type,
             invoice: {
               description: values.fullname,
               total: parseFloat(values.total_amount || "0"),
