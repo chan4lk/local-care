@@ -16,7 +16,7 @@ export default class Database {
             entities: [Patient],
             synchronize: true
         })
-        
+
         AppDataSource.initialize()
             .then(() => {
                 console.log("Data Source has been initialized!")
@@ -27,11 +27,20 @@ export default class Database {
         this.connection = AppDataSource;
     }
 
-    public async insert({name , surname}: {name:string , surname:string}): Promise<Patient> {
+    public async insert(patientDetails: Patient): Promise<Patient> {
         const patientRepository = this.connection.getRepository(Patient);
-        const patient: Patient = { name: name, surname: surname };
+        const patient: Patient = patientDetails;
 
         return patientRepository.save(patient);
+    }
+
+    public async fetchByNameOrMobile({ keyword }: { keyword: string }): Promise<Patient[]> {
+        const patientRepository = this.connection.getRepository(Patient);
+
+        return patientRepository
+            .createQueryBuilder("patient")
+            .where("patient.name like %:keyword% or patient.mobile like %:keyword%", { keyword })
+            .getMany();
     }
 
     public async fetchAll(): Promise<Patient[]> {

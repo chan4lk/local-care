@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('Patient')
@@ -7,8 +6,17 @@ export default class Patient {
     id?: number;
 
     @Column()
-    name: string;
+    fullname: string;
 
     @Column()
-    surname: string;
+    mobile: string;
+
+    @Column()
+    treatment_type: string;
+
+    @Column({type: 'float'})
+    total_amount: number;
+
+    @Column({type: 'float'})
+    paid_amount: number;
 }

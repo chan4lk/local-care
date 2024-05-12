@@ -17,7 +17,15 @@ const createWindow = () => {
   global.database = new Database();
 
   ipcMain.handle('database:insert',async (event, arg) => {
-    return await Promise.resolve(database.insert(arg));
+    return await database.insert(arg);
+  })
+
+  ipcMain.handle('database:search',async (event, arg) => {
+    return await database.fetchByNameOrMobile(arg);
+  })
+
+  ipcMain.handle('database:fetchall',async (event, arg) => {
+    return await database.fetchAll();
   })
 
   const mainWindow = new BrowserWindow({

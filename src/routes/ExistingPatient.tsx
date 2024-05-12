@@ -13,7 +13,7 @@ const validationSchema = Yup.object().shape({
     .required("Required"),
   treatment_type: Yup.string().required("Required"),
   total_amount: Yup.number().positive().required("Required"),
-  amount_paid: Yup.number()
+  paid_amount: Yup.number()
     .min(0, "Amount must be positive")
     .max(Yup.ref("total_amount"), "Amount must not exceed the total amount")
     .required("Required"),
@@ -30,7 +30,7 @@ const ExistingPatient = () => (
         mobile: "",
         treatment_type: "",
         total_amount: "",
-        amount_paid: "",
+        paid_amount: "",
         previous_paid: "50",
       }}
       validationSchema={validationSchema}
@@ -91,11 +91,11 @@ const ExistingPatient = () => (
               handleChange={handleChange}
               values={values}
               label="Amount Paid"
-              field="amount_paid"
+              field="paid_amount"
             />
           </div>
           <div className="flex items-center justify-between">
-          <div className="flex items-center">
+            <div className="flex items-center">
               <label
                 htmlFor="amount_due"
                 className="block text-sm font-medium text-gray-700 mr-4"
@@ -123,12 +123,11 @@ const ExistingPatient = () => (
                 $
                 {(
                   parseFloat(values.total_amount || "0") -
-                  parseFloat(values.amount_paid || "0") -
+                  parseFloat(values.paid_amount || "0") -
                   parseFloat(values.previous_paid || "0")
                 ).toFixed(2)}
               </span>
             </div>
-            
           </div>
           <div>
             <button

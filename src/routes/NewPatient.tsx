@@ -13,15 +13,13 @@ const validationSchema = Yup.object().shape({
     .required("Required"),
   treatment_type: Yup.string().required("Required"),
   total_amount: Yup.number().positive().required("Required"),
-  amount_paid: Yup.number()
+  paid_amount: Yup.number()
     .min(0, "Amount must be positive")
     .max(Yup.ref("total_amount"), "Amount must not exceed the total amount")
     .required("Required"),
 });
+
 const NewPatient = () => {
-
-  
-
   return <div className="container mx-auto">
     <div className="flex items-center justify-center">
       <h1 className="text-3xl font-bold mb-8">Add New Patient!</h1>
@@ -32,17 +30,21 @@ const NewPatient = () => {
         mobile: "",
         treatment_type: "",
         total_amount: "",
-        amount_paid: "",
+        paid_amount: "",
       }}
       validationSchema={validationSchema}
-      onSubmit={async (values, { setSubmitting }) => {
-        const insert = await (window as any).
-                electronAPI.insertPatient({name: 'Chandima' , surname: 'Ranaweeera'});
+      onSubmit={async (values, { resetForm }) => {
+        const insert = await window.electronAPI.insertPatient({
+          ...values,
+          total_amount: parseFloat(values.total_amount),
+          paid_amount: parseFloat(values.paid_amount)
+        });
 
         console.log('Insert: ');
         console.table(insert);
         console.log('Fetch: ');
-        //console.table(await database.fetchAll());
+        console.table(await window.electronAPI.fetchAll());
+        resetForm();
       }}
     >
       {({
@@ -95,7 +97,7 @@ const NewPatient = () => {
               handleChange={handleChange}
               values={values}
               label="Amount Paid"
-              field="amount_paid"
+              field="paid_amount"
             />
           </div>
           <div className="flex items-center">
@@ -109,7 +111,7 @@ const NewPatient = () => {
               id="amount_due"
               className="text-lg font-semibold text-gray-900"
             >
-              ${(parseFloat(values.total_amount || '0') - parseFloat(values.amount_paid || '0')).toFixed(2)}
+              ${(parseFloat(values.total_amount || '0') - parseFloat(values.paid_amount || '0')).toFixed(2)}
             </span>
           </div>
           <div>
