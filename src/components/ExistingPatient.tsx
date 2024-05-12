@@ -3,16 +3,16 @@ import { SimpleInput } from "../components/SimpleInput";
 import { SimpleSelect } from "../components/SimpleSelect";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
+import { Search } from "./Search";
 
 export const ExistingPatient = () => { 
-  
-
   return (
   <div className="container mx-auto">
     <div className="flex items-center ">
       <Back />
       <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2">Existing Patient</h1>
     </div>
+    <Search />
     <Formik
       initialValues={{
         fullname: "",

@@ -1,7 +1,7 @@
 import path from 'path';
 import { defaultStorageFolder } from '../main';
 import Patient from './models/Patient';
-import { DataSource } from "typeorm"
+import { DataSource, Like } from "typeorm"
 export default class Database {
     private connection: DataSource;
 
@@ -38,9 +38,12 @@ export default class Database {
         const patientRepository = this.connection.getRepository(Patient);
 
         return patientRepository
-            .createQueryBuilder("patient")
-            .where("patient.name like %:keyword% or patient.mobile like %:keyword%", { keyword })
-            .getMany();
+            .find({
+                where: [
+                    { fullname: Like(`${keyword}%`) },
+                    { mobile: Like(`${keyword}%`) }
+                ]
+            })
     }
 
     public async fetchAll(): Promise<Patient[]> {

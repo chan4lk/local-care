@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Index } from 'typeorm';
 
 @Entity('Patient')
 export default class Patient {
@@ -6,9 +6,11 @@ export default class Patient {
     id?: number;
 
     @Column()
+    @Index({fulltext: true})
     fullname: string;
 
     @Column()
+    @Index({fulltext: true})
     mobile: string;
 
     @Column()
