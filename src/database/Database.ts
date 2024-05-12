@@ -2,6 +2,8 @@ import path from 'path';
 import { defaultStorageFolder } from '../main';
 import Patient from './models/Patient';
 import { DataSource, Like } from "typeorm"
+import Invoice from './models/Invoice';
+import Transaction from './models/Transaction';
 export default class Database {
     private connection: DataSource;
 
@@ -13,7 +15,7 @@ export default class Database {
         const AppDataSource = new DataSource({
             type: 'sqlite',
             database: path.join(defaultStorageFolder, 'doc_app.sqlite'),
-            entities: [Patient],
+            entities: [Patient, Invoice, Transaction],
             synchronize: true
         })
 
@@ -29,9 +31,8 @@ export default class Database {
 
     public async insert(patientDetails: Patient): Promise<Patient> {
         const patientRepository = this.connection.getRepository(Patient);
-        const patient: Patient = patientDetails;
-
-        return patientRepository.save(patient);
+        console.log('patinet', patientDetails);
+        return patientRepository.save(patientDetails);
     }
 
     public async fetchByNameOrMobile({ keyword }: { keyword: string }): Promise<Patient[]> {
