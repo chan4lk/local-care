@@ -26,7 +26,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        
     - run: npm ci
+
+    - run: npm run make
+      if: github.event.pull_request.merged == false
+
     - run: npm run publish
+      if: github.event.pull_request.merged == true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
