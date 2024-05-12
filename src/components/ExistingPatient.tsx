@@ -4,7 +4,7 @@ import { SimpleSelect } from "../components/SimpleSelect";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { Search } from "./Search";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Patient from "../database/models/Patient";
 
 export const ExistingPatient = () => {
@@ -36,11 +36,7 @@ export const ExistingPatient = () => {
               total_amount: parseFloat(values.total_amount),
               paid_amount: patient.paid_amount + parseFloat(values.paid_amount)
             });
-    
-            console.log('Insert: ');
-            console.table(insert);
-            console.log('Fetch: ');
-            console.table(await window.electronAPI.fetchAll());
+            alert('Payment completed')
             resetForm();
             setPatient(null);
           }}
