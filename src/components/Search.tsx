@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 
-export const Search = () => {
+export const Search = ({setPatient}: {setPatient: React.Dispatch<any>}) => {
   const [keyword, setKeyword] = useState("");
   const [patients, setPatients] = useState([]);
   const handleInput = async (e: any) => {
@@ -38,7 +38,7 @@ export const Search = () => {
         <h3 className="mt-2 text-sm">Results:</h3>
         <ul className="bg-white border border-gray-100 w-full mt-2 ">
           {patients.map((item, key) => (
-            <li key={key} className="pl-8 pr-2 py-1 border-b-2 border-gray-100 relative cursor-pointer hover:bg-yellow-50 hover:text-gray-900">
+            <li onClick={() => setPatient(item)} key={key} className="pl-8 pr-2 py-1 border-b-2 border-gray-100 relative cursor-pointer hover:bg-yellow-50 hover:text-gray-900">
               <svg
                 className="stroke-current absolute w-4 h-4 left-2 top-2"
                 xmlns="http://www.w3.org/2000/svg"
