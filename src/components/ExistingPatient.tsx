@@ -65,7 +65,6 @@ export const ExistingPatient = () => {
               },
             } as IPatient;
             const insert = await window.electronAPI.insertPatient(patientDetails);
-            alert("Payment completed");
             resetForm();
             setPatient(null);
           }}
