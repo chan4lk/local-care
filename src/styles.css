@@ -1,0 +1,133 @@
+/* styles.css */
+
+.viewdb-container {
+  max-width: 30rem;
+  margin: 1rem auto;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+  text-align: center; /* Center contents */
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr ;
+  justify-items: center; /* Center items */
+}
+
+.input-field {
+  margin-bottom: 0.1rem; /* Add more space between input fields */
+  text-align: left; /* Align text left */
+}
+
+.input-field label {
+  margin-top: 1rem; /* Add margin */
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem; /* Add margin below label */
+}
+
+.input-field input[type="text"],
+.input-field input[type="number"] {
+  width: calc(100% - 1rem); /* Adjust width with padding */
+  padding: 0.5rem; /* Increase padding */
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between; /* Distribute buttons evenly */
+  margin-top: 1rem; /* Add margin */
+}
+
+.button-left {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-left:hover {
+  background-color: #45a049;
+}
+
+.button-right {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #007bff; /* Change color for Existing Customer button */
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-right:hover {
+  background-color: #0056b3; /* Change hover color for Existing Customer button */
+}
+
+.center-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem; /* Add margin */
+}
+
+.centered-button {
+  padding: 0.5rem 1rem;
+  background-color: #b18dc5; /* Change color for Print Bill button */
+  color: #222020;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.centered-button:hover {
+  background-color: #ff7043; /* Change hover color for Print Bill button */
+}
+
+.balance {
+  font-size: 1rem; /* Adjust font size */
+  font-weight: 800;
+  color: #d11818;
+
+  
+}
+.balance-container {
+  margin-top: 1rem; /* Adjust as needed */
+  text-align: left; /* Align text left */
+
+}
+
+/* Styling for Search Customer */
+.search-container {
+  margin-top: 1rem; /* Add margin */
+}
+
+.search-container label {
+  display: block;
+  font-size:1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem; /* Add margin below label */
+}
+
+.search-container input[type="text"] {
+  width: calc(100% - 1rem); /* Adjust width with padding */
+  padding: 0.5rem; /* Increase padding */
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
