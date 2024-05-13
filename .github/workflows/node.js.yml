@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-
+    if: github.event.pull_request.merged == false
     runs-on: windows-latest
 
     strategy:
@@ -30,9 +30,28 @@ jobs:
     - run: npm ci
 
     - run: npm run make
-      if: github.event.pull_request.merged == false
+
+  publish:
+    if: github.event.pull_request.merged == true
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        
+    - run: npm ci
 
     - run: npm run publish
       if: github.event.pull_request.merged == true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
