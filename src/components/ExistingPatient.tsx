@@ -48,6 +48,7 @@ export const ExistingPatient = () => {
               treatment_type: values.treatment_type,
               invoice: {
                 ...patient.invoice,
+                total: parseFloat(values.total_amount || "0"),
                 transactions: [
                   ...patient.invoice.transactions.filter(t => t.status === ITransactionStatus.Paid),
                   {
