@@ -24,69 +24,9 @@ export const ViewDB = () => {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
 
-  const load = async () => {
-    // create database
-    const db = await createRxDatabase({
-      name: "patientDb",
-      storage: getRxStorageDexie(),
-    });
+  
 
-    // create collections
-    const collections = await db.addCollections({
-      patients: {
-        schema: {
-          title: "patient schema",
-          version: 0,
-          description: "describes a patient",
-          primaryKey: "id",
-          type: "object",
-          properties: {
-            id: {
-              type: "number",
-              maxLength: 100, // <- the primary key must have set maxLength
-            },
-            name: {
-              type: "string",
-            },
-            mobile: {
-              type: "string",
-            },
-            treatment: {
-              type: "string",
-            },
-            treatmentCost: {
-              type: "number",
-            },
-            paidAmount: {
-              type: "number",
-            },
-          },
-          required: ["name", "id"],
-        },
-      },
-    });
-
-    // observe a query
-    await collections.patients
-      .find({
-        selector: {
-          name: { $regex: RegExp(searchText, "i") }, // Case insensitive search
-        },
-      })
-      .$.subscribe((result) => {
-        setCustomer(result[0] || {
-          name: "",
-          mobile: "",
-          treatment: "",
-          treatmentCost: 0,
-          paidAmount: 0,
-        });
-      });
-  };
-
-  useEffect(() => {
-    load();
-  }, [searchText]);
+  
 
   const handleSearchTextChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
