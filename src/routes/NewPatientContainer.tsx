@@ -1,7 +1,9 @@
 import { NewPatient } from "../components/NewPatient";
-
+import Layout from "../components/Layout";
 const NewPatientContainer = () => (
-  <NewPatient />
+  <Layout>
+    <NewPatient />
+  </Layout>
 );
 
 export default NewPatientContainer;

@@ -16,15 +16,15 @@ const createWindow = () => {
 
   global.database = new Database();
 
-  ipcMain.handle('database:insert',async (event, arg) => {
+  ipcMain.handle('database:insert', async (event, arg) => {
     return await database.insert(arg);
   })
 
-  ipcMain.handle('database:search',async (event, arg) => {
+  ipcMain.handle('database:search', async (event, arg) => {
     return await database.fetchByNameOrMobile(arg);
   })
 
-  ipcMain.handle('database:fetchall',async (event, arg) => {
+  ipcMain.handle('database:fetchall', async (event, arg) => {
     return await database.fetchAll();
   })
 
@@ -35,7 +35,7 @@ const createWindow = () => {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
-  
+
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
@@ -44,8 +44,13 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if (!app.isPackaged) {
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools();
+  }else {
+    app.dock.hide(); // Only mac
+    mainWindow.setMenuBarVisibility(false); // Only Windows and Linux
+  }
 };
 
 // This method will be called when Electron has finished
