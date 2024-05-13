@@ -48,7 +48,7 @@ const createWindow = () => {
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
   }else {
-    app.dock.hide(); // Only mac
+    app.dock?.hide(); // Only mac
     mainWindow.setMenuBarVisibility(false); // Only Windows and Linux
   }
 };
