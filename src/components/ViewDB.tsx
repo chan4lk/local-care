@@ -1,7 +1,7 @@
-// Main component
 import React, { useEffect, useState, ChangeEvent } from "react";
 import CustomerForm from "./CustomerForm";
 import SearchBar from "./SearchBar";
+import { FaArrowLeft } from "react-icons/fa";
 
 // Define interface Customer
 interface Customer {
@@ -24,19 +24,28 @@ export const ViewDB = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [showButtons, setShowButtons] = useState<boolean>(true); // Manage visibility of buttons
 
   const handleSearchTextChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
   };
 
   const handleExistingCustomerClick = () => {
-    setShowSearchBar(!showSearchBar);
+    setShowSearchBar(true); // Show the search bar
     setShowForm(false);
+    setShowButtons(false); // Hide both buttons when clicking "Existing Patient"
   };
 
   const handleNewCustomerClick = () => {
     setShowForm(true);
     setShowSearchBar(false);
+    setShowButtons(false); // Hide both buttons after clicking "New Patient"
+  };
+
+  const handleBackClick = () => {
+    setShowForm(false);
+    setShowSearchBar(false);
+    setShowButtons(true); // Show both buttons when clicking back
   };
 
   const handleTreatmentCostChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +61,22 @@ export const ViewDB = () => {
     setCustomer((prevCustomer) => ({
       ...prevCustomer,
       paidAmount: isNaN(amount) ? 0 : amount,
+    }));
+  }
+
+  const handleMobileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setCustomer(prevState => ({
+      ...prevState,
+      mobile: newValue
+    }));
+  };
+  
+  const handleTreatmentChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setCustomer(prevState => ({
+      ...prevState,
+      treatment: newValue
     }));
   };
 
@@ -106,30 +131,51 @@ export const ViewDB = () => {
     });
   };
 
+  const handleSearch = () => {
+    // Your search logic here
+    console.log("Search triggered with text:", searchText);
+  };
+
   return (
     <div className="flex justify-center items-center h-full">
       <div className="max-w-md w-full bg-white shadow-md rounded-md p-8">
-              <div className="flex justify-between mb-4">
-          <button className="px-4 py-2 bg-green-300 text-Black rounded-md hover:bg-green-900" onClick={handleNewCustomerClick}>
-            New Patient
-          </button>
-          <button className="px-4 py-2 bg-blue-500 text-Black rounded-md hover:bg-blue-600" onClick={handleExistingCustomerClick}>
-            {showSearchBar ? "Existing Patient" : "Existing Patient"}
-          </button>
-        </div>
+        {showButtons && (
+          <div className="flex justify-between mb-4">
+            <button className="px-4 py-2 bg-green-300 text-black rounded-md hover:bg-green-900" onClick={handleNewCustomerClick}>
+              New Patient
+            </button>
+            <button className="px-4 py-2 bg-blue-500 text-black rounded-md hover:bg-blue-600" onClick={handleExistingCustomerClick}>
+              Existing Patient
+            </button>
+          </div>
+        )}
 
-        {showSearchBar && <SearchBar searchText={searchText} handleSearchTextChange={handleSearchTextChange} />}
+        {showSearchBar && (
+          <div>
+            <button className="flex items-center bg-blue-200 text-black rounded-lg hover:bg-blue-400 mb-4" onClick={handleBackClick}>
+              <FaArrowLeft className="mr-2" /> 
+            </button>
+            <SearchBar searchText={searchText} handleSearchTextChange={handleSearchTextChange} handleSearch={handleSearch} />
+          </div>
+        )}
         {showForm && (
-          <CustomerForm
-            customer={customer}
-            balance={balance}
-            handleNameChange={handleNameChange}
-            handleTreatmentCostChange={handleTreatmentCostChange}
-            handlePaidAmountChange={handlePaidAmountChange}
-            handlePrintBill={handlePrintBill}
-            handleClearForm={handleClearForm}
-            clearDefaultValue={clearDefaultValue}
-          />
+          <div>
+            <button className="flex items-center bg-blue-200 text-black rounded-lg hover:bg-blue-400 mb-4" onClick={handleBackClick}>
+              <FaArrowLeft className="mr-2" /> 
+            </button>
+            <CustomerForm
+              customer={customer}
+              balance={balance}
+              handleNameChange={handleNameChange}
+              handleMobileChange={handleMobileChange}
+              handleTreatmentChange={handleTreatmentChange}
+              handleTreatmentCostChange={handleTreatmentCostChange}
+              handlePaidAmountChange={handlePaidAmountChange}
+              handlePrintBill={handlePrintBill}
+              handleClearForm={handleClearForm}
+              clearDefaultValue={clearDefaultValue}
+            />
+          </div>
         )}
       </div>
     </div>
