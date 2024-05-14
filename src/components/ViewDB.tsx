@@ -1,6 +1,7 @@
+// Main component
 import React, { useEffect, useState, ChangeEvent } from "react";
-import { createRxDatabase } from "rxdb";
-import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
+import CustomerForm from "./CustomerForm";
+import SearchBar from "./SearchBar";
 
 // Define interface Customer
 interface Customer {
@@ -24,29 +25,25 @@ export const ViewDB = () => {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
 
-  
-
-  
-
   const handleSearchTextChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
   };
 
   const handleExistingCustomerClick = () => {
-    setShowSearchBar(!showSearchBar); // Toggle the visibility of the search bar
-    setShowForm(false); // Hide the form
+    setShowSearchBar(!showSearchBar);
+    setShowForm(false);
   };
 
   const handleNewCustomerClick = () => {
-    setShowForm(true); // Show the form when clicking "New Customer"
-    setShowSearchBar(false); // Hide the search bar
+    setShowForm(true);
+    setShowSearchBar(false);
   };
 
   const handleTreatmentCostChange = (e: ChangeEvent<HTMLInputElement>) => {
     const cost = parseFloat(e.target.value);
     setCustomer((prevCustomer) => ({
       ...prevCustomer,
-      treatmentCost: isNaN(cost) ? 0 : parseFloat(cost.toFixed(2)), // Format to 2 decimal places
+      treatmentCost: isNaN(cost) ? 0 : parseFloat(cost.toFixed(2)),
     }));
   };
 
@@ -76,7 +73,7 @@ export const ViewDB = () => {
 
   useEffect(() => {
     const calculatedBalance = (customer.treatmentCost - customer.paidAmount).toFixed(2);
-    setBalance(`$${calculatedBalance}`); // Add dollar sign
+    setBalance(`$${calculatedBalance}`);
   }, [customer.treatmentCost, customer.paidAmount]);
 
   const handlePrintBill = () => {
@@ -89,7 +86,6 @@ export const ViewDB = () => {
       Balance: $${balance}
     `;
 
-    // Create a new window to print the bill
     const billWindow = window.open("", "_blank");
     if (billWindow) {
       billWindow.document.write(`<pre>${billContent}</pre>`);
@@ -111,97 +107,33 @@ export const ViewDB = () => {
   };
 
   return (
-    <div className="viewdb-container">
-      <h1 className="text-2xl font-bold">Enter Customer Details</h1>
-      <div className="button-container">
-        <button className="button-left" onClick={handleNewCustomerClick}>
-          New Customer
-        </button>
-        <button className="button-right" onClick={handleExistingCustomerClick}>
-          {showSearchBar ? "Hide Search" : "Existing Customer"}
-        </button>
-      </div>
-      {showSearchBar && (
-        <div className="search-container">
-          <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
-            Search Customer
-          </label>
-          <input
-            type="text"
-            id="search"
-            className="input-field"
-            value={searchText}
-            onChange={handleSearchTextChange}
-          />
+    <div className="flex justify-center items-center h-full">
+      <div className="max-w-md w-full bg-white shadow-md rounded-md p-8">
+              <div className="flex justify-between mb-4">
+          <button className="px-4 py-2 bg-green-300 text-Black rounded-md hover:bg-green-900" onClick={handleNewCustomerClick}>
+            New Patient
+          </button>
+          <button className="px-4 py-2 bg-blue-500 text-Black rounded-md hover:bg-blue-600" onClick={handleExistingCustomerClick}>
+            {showSearchBar ? "Existing Patient" : "Existing Patient"}
+          </button>
         </div>
-      )}
-      {showForm && (
-        <form className="form-grid">
-          <div className="input-field">
-            <label htmlFor="name">Name</label>
-            <input
-              type="text"
-              id="name"
-              value={customer.name}
-              onChange={handleNameChange}
-              onFocus={() => clearDefaultValue("name")}
-            />
-          </div>
-          <div className="input-field">
-            <label htmlFor="mobile">Mobile Number</label>
-            <input
-              type="text"
-              id="mobile"
-              value={customer.mobile}
-              onChange={(e) => setCustomer({ ...customer, mobile: e.target.value })}
-            />
-          </div>
-          <div className="input-field">
-            <label htmlFor="treatment">Treatment</label>
-            <input
-              type="text"
-              id="treatment"
-              value={customer.treatment}
-              onChange={(e) => setCustomer({ ...customer, treatment: e.target.value })}
-            />
-          </div>
-          <div className="input-field">
-            <label htmlFor="treatmentCost">Treatment Cost</label>
-            <input
-              type="number"
-              id="treatmentCost"
-              value={customer.treatmentCost === 0 ? "" : customer.treatmentCost}
-              onChange={handleTreatmentCostChange}
-              onFocus={() => clearDefaultValue("treatmentCost")}
-            />
-          </div>
-          <div className="input-field">
-            <label htmlFor="paidAmount">Paid Amount</label>
-            <input
-              type="number"
-              id="paidAmount"
-              value={customer.paidAmount === 0 ? "" : customer.paidAmount}
-              onChange={handlePaidAmountChange}
-              onFocus={() => clearDefaultValue("paidAmount")}
-            />
-            <div className="balance-container">
-            <span className="font-medium">Balance:</span>
-            <span className="balance">{balance}</span>
-          </div>
-          </div>
-          
-          <div className="button-container">
-            <button className="centered-button" onClick={handlePrintBill}>
-              Print Bill
-            </button>
-            <div style={{ width: "10px" }}></div> {/* Adding some space */}
-            <button className="centered-button" onClick={handleClearForm}>
-              Reset
-            </button>
-          </div>
-          
-        </form>
-      )}
+
+        {showSearchBar && <SearchBar searchText={searchText} handleSearchTextChange={handleSearchTextChange} />}
+        {showForm && (
+          <CustomerForm
+            customer={customer}
+            balance={balance}
+            handleNameChange={handleNameChange}
+            handleTreatmentCostChange={handleTreatmentCostChange}
+            handlePaidAmountChange={handlePaidAmountChange}
+            handlePrintBill={handlePrintBill}
+            handleClearForm={handleClearForm}
+            clearDefaultValue={clearDefaultValue}
+          />
+        )}
+      </div>
     </div>
   );
 };
+
+export default ViewDB;
