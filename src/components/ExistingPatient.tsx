@@ -93,20 +93,13 @@ export const ExistingPatient = () => {
                 label="Mobile"
                 field="mobile"
               />
-              <SimpleSelect
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-                values={values}
-                label="Treatment Type"
-                field="treatment_type"
-                options={[
-                  { value: "", label: "Select" },
-                  { value: "dental", label: "Dental" },
-                  { value: "dermatology", label: "Dermatology" },
-                  { value: "general_medicine", label: "General Medicine" },
-                ]}
-              />
-
+              <SimpleInput
+              handleBlur={handleBlur}
+              handleChange={handleChange}
+              values={values}
+              label="Treatment Type"
+              field="treatment_type"
+            />
               <div className="flex items-center justify-between">
                 <SimpleInput
                   handleBlur={handleBlur}
@@ -135,7 +128,7 @@ export const ExistingPatient = () => {
                     id="amount_due"
                     className="text-lg font-semibold text-gray-900"
                   >
-                    ${parseFloat(values.previous_paid || "0").toFixed(2)}
+                    ${parseFloat(values.previous_paid || "0").toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex items-center">
@@ -154,7 +147,7 @@ export const ExistingPatient = () => {
                       parseFloat(values.total_amount || "0") -
                       parseFloat(values.paid_amount || "0") -
                       parseFloat(values.previous_paid || "0")
-                    ).toFixed(2)}
+                    ).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
                   </span>
                 </div>
               </div>

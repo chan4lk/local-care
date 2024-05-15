@@ -78,18 +78,12 @@ export const NewPatient = () => {
               label="Mobile"
               field="mobile"
             />
-            <SimpleSelect
+            <SimpleInput
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
               label="Treatment Type"
               field="treatment_type"
-              options={[
-                { value: "", label: "Select" },
-                { value: "dental", label: "Dental" },
-                { value: "dermatology", label: "Dermatology" },
-                { value: "general_medicine", label: "General Medicine" },
-              ]}
             />
 
             <div className="flex items-center justify-between">
@@ -108,23 +102,26 @@ export const NewPatient = () => {
                 field="paid_amount"
               />
             </div>
-            <div className="flex items-center">
-              <label
-                htmlFor="amount_due"
-                className="block text-sm font-medium text-gray-700 mr-4"
-              >
-                Amount Due
-              </label>
-              <span
-                id="amount_due"
-                className="text-lg font-semibold text-gray-900"
-              >
-                $
-                {(
-                  parseFloat(values.total_amount || "0") -
-                  parseFloat(values.paid_amount || "0")
-                ).toFixed(2)}
-              </span>
+            <div className="flex items-center justify-between">
+              <div></div>
+              <div className="flex items-center">
+                <label
+                  htmlFor="amount_due"
+                  className="block text-sm font-medium text-gray-700 mr-4"
+                >
+                  Amount Due
+                </label>
+                <span
+                  id="amount_due"
+                  className="text-lg font-semibold text-gray-900"
+                >
+                  Rs.
+                  {(
+                    parseFloat(values.total_amount || "0") -
+                    parseFloat(values.paid_amount || "0")
+                  ).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
+                </span>
+              </div>
             </div>
             <div>
               <button

@@ -1,22 +1,26 @@
-import { FormEvent, useState } from "react";
+import { useState } from "react";
+import { IPatient } from "../types/electron-api";
 
-export const Search = ({setPatient}: {setPatient: React.Dispatch<any>}) => {
+export const Search = ({ setPatient }: { setPatient: React.Dispatch<any> }) => {
   const [keyword, setKeyword] = useState("");
-  const [patients, setPatients] = useState([]);
+  const [patients, setPatients] = useState<IPatient[]>([]);
   const handleInput = async (e: any) => {
     const text = e.target.value;
     setKeyword(text);
-    const patients = await window.electronAPI.search({ keyword: text });
-    console.log(patients)
-    setPatients(patients);
+    if (text) {
+      const patients = await window.electronAPI.search({ keyword: text });
+      setPatients(patients);
+    } else {
+      setPatients([]);
+    }
   };
   return (
     <div className="">
-      <div className="inline-flex flex-col justify-center relative text-gray-500">
+      <div className="w-full inline-flex flex-col justify-center relative text-gray-500">
         <div className="relative">
           <input
             type="text"
-            className="p-2 pl-8 rounded border border-gray-200 bg-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent"
+            className="w-full p-2 pl-8 rounded border border-gray-200 bg-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent"
             placeholder="search..."
             value={keyword}
             onChange={handleInput}
@@ -39,7 +43,11 @@ export const Search = ({setPatient}: {setPatient: React.Dispatch<any>}) => {
         <h3 className="mt-2 text-sm">Results:</h3>
         <ul className="bg-white border border-gray-100 w-full mt-2 ">
           {patients.map((item, key) => (
-            <li onClick={() => setPatient(item)} key={key} className="pl-8 pr-2 py-1 border-b-2 border-gray-100 relative cursor-pointer hover:bg-yellow-50 hover:text-gray-900">
+            <li
+              onClick={() => setPatient(item)}
+              key={key}
+              className="pl-8 pr-2 py-1 border-b-2 border-gray-100 relative cursor-pointer hover:bg-yellow-50 hover:text-gray-900"
+            >
               <svg
                 className="stroke-current absolute w-4 h-4 left-2 top-2"
                 xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +68,8 @@ export const Search = ({setPatient}: {setPatient: React.Dispatch<any>}) => {
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              {item.fullname}
+              {item.fullname} - {item.treatment_type} -{" "}
+              {item.createdAt?.toDateString()}
             </li>
           ))}
         </ul>

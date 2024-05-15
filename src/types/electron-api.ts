@@ -4,6 +4,7 @@ export interface IPatient {
     mobile: string;
     treatment_type: string;
     invoice: IInvoice;
+    createdAt?: Date;
 }
 export interface IInvoice{
     id?: number;

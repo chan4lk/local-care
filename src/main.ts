@@ -16,6 +16,10 @@ const createWindow = () => {
 
   global.database = new Database();
 
+  ipcMain.removeHandler('database:insert');
+  ipcMain.removeHandler('database:search');
+  ipcMain.removeHandler('database:fetchall');
+
   ipcMain.handle('database:insert', async (event, arg) => {
     return await database.insert(arg);
   })
