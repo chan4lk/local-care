@@ -45,7 +45,7 @@ export const ExistingPatient = () => {
               id: patient.id,
               fullname: values.fullname,
               mobile: values.mobile,
-              treatment_type: values.treatment_type,
+              treatment: values.treatment,
               invoice: {
                 ...patient.invoice,
                 total: parseFloat(values.total_amount || "0"),
@@ -97,8 +97,8 @@ export const ExistingPatient = () => {
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
-              label="Treatment Type"
-              field="treatment_type"
+              label="Treatment"
+              field="treatment"
             />
               <div className="flex items-center justify-between">
                 <SimpleInput
@@ -128,7 +128,7 @@ export const ExistingPatient = () => {
                     id="amount_due"
                     className="text-lg font-semibold text-gray-900"
                   >
-                    ${parseFloat(values.previous_paid || "0").toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
+                    { "Rs. "}{parseFloat(values.previous_paid || "0").toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
                   </span>
                 </div>
                 <div className="flex items-center">
@@ -142,7 +142,7 @@ export const ExistingPatient = () => {
                     id="amount_due"
                     className="text-lg font-semibold text-gray-900"
                   >
-                    $
+                    { "Rs. "}
                     {(
                       parseFloat(values.total_amount || "0") -
                       parseFloat(values.paid_amount || "0") -

@@ -1,6 +1,5 @@
 import { Formik } from "formik";
 import { SimpleInput } from "../components/SimpleInput";
-import { SimpleSelect } from "../components/SimpleSelect";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { IPatient, ITransactionStatus } from "../types/electron-api";
@@ -16,7 +15,7 @@ export const NewPatient = () => {
         initialValues={{
           fullname: "",
           mobile: "",
-          treatment_type: "",
+          treatment: "",
           total_amount: "",
           paid_amount: "",
         }}
@@ -28,7 +27,7 @@ export const NewPatient = () => {
           const patient = {
             fullname: values.fullname,
             mobile: values.mobile,
-            treatment_type: values.treatment_type,
+            treatment: values.treatment,
             invoice: {
               description: values.fullname,
               total: parseFloat(values.total_amount || "0"),
@@ -82,8 +81,8 @@ export const NewPatient = () => {
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
-              label="Treatment Type"
-              field="treatment_type"
+              label="Treatment"
+              field="treatment"
             />
 
             <div className="flex items-center justify-between">

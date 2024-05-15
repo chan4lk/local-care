@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IPatient } from "../types/electron-api";
+import { IPatient, ITransactionStatus } from "../types/electron-api";
 
 export const Search = ({ setPatient }: { setPatient: React.Dispatch<any> }) => {
   const [keyword, setKeyword] = useState("");
@@ -68,8 +68,15 @@ export const Search = ({ setPatient }: { setPatient: React.Dispatch<any> }) => {
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              {item.fullname} - {item.treatment_type} -{" "}
-              {item.createdAt?.toDateString()}
+              {item.fullname} - {item.createdAt?.toDateString()} - {" Rs. "}
+              {item.invoice.transactions
+                .filter((t) => t.status == ITransactionStatus.Pending)
+                .map((t) => t.amount)
+                .reduce((sum, curent) => sum + curent, 0)
+                .toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                })} - {item.treatment}
             </li>
           ))}
         </ul>

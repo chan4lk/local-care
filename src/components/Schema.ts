@@ -8,7 +8,7 @@ export const validationSchema = Yup.object().shape({
   mobile: Yup.string()
     .matches(/^[0-9]{10}$/, "Invalid phone number")
     .required("Required"),
-  treatment_type: Yup.string()
+  treatment: Yup.string()
   .min(2, "Too Short!")
   .max(50, "Too Long!")
   .required("Required"),

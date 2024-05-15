@@ -2,7 +2,7 @@ export interface IPatient {
     id?: number;
     fullname: string;
     mobile: string;
-    treatment_type: string;
+    treatment: string;
     invoice: IInvoice;
     createdAt?: Date;
 }

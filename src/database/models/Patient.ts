@@ -16,7 +16,7 @@ export default class Patient extends Auditable{
     mobile: string;
 
     @Column()
-    treatment_type: string;
+    treatment: string;
 
     @OneToOne(() => Invoice, (invoice) => invoice.patient)
     invoice: Relation<Invoice>
