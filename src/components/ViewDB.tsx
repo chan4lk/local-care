@@ -1,7 +1,7 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import CustomerForm from "./CustomerForm";
 import SearchBar from "./SearchBar";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaUserPlus, FaUser } from "react-icons/fa"; // Import icons
 
 // Define interface Customer
 interface Customer {
@@ -142,10 +142,10 @@ export const ViewDB = () => {
         {showButtons && (
           <div className="flex justify-between mb-4">
             <button className="px-4 py-2 bg-green-300 text-black rounded-md hover:bg-green-900" onClick={handleNewCustomerClick}>
-              New Patient
+              <FaUserPlus className="mr-2 items-center " /> New Patient {/* Use FaUserPlus icon */}
             </button>
             <button className="px-4 py-2 bg-blue-500 text-black rounded-md hover:bg-blue-600" onClick={handleExistingCustomerClick}>
-              Existing Patient
+              <FaUser className="mr-2" /> Existing Patient {/* Use FaUser icon */}
             </button>
           </div>
         )}
