@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent } from 'react';
 
 interface Customer {
   name: string;
@@ -12,8 +12,8 @@ interface CustomerFormProps {
   customer: Customer;
   balance: string;
   handleNameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleMobileChange: (e: ChangeEvent<HTMLInputElement>) => void; // Define handleMobileChange
-  handleTreatmentChange: (e: ChangeEvent<HTMLInputElement>) => void; // Define handleTreatmentChange
+  handleMobileChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleTreatmentChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleTreatmentCostChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handlePaidAmountChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handlePrintBill: () => void;
@@ -61,7 +61,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               type="number"
               id="mobile"
               value={customer.mobile}
-              onChange={handleMobileChange} // Use handleMobileChange here
+              onChange={handleMobileChange}
               className="input-field border border-gray-300 rounded-md p-2 flex-grow"
             />
           </div>
@@ -73,7 +73,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               type="text"
               id="treatment"
               value={customer.treatment}
-              onChange={handleTreatmentChange} // Use handleTreatmentChange here
+              onChange={handleTreatmentChange}
               className="input-field border border-gray-300 rounded-md p-2 flex-grow"
             />
           </div>
