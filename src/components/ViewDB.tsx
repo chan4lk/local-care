@@ -102,25 +102,42 @@ export const ViewDB = () => {
   }, [customer.treatmentCost, customer.paidAmount]);
 
   const handlePrintBill = () => {
+    const formatAmount = (amount: number) => {
+      return `LKR ${amount.toFixed(2)}`; // Formats the amount to LKR format with 2 decimal places
+    };
+  
+    const currentDate = new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }); // Get current date and time in Colombo timezone
+  
     const billContent = `
-      Customer Name: ${customer.name}
-      Mobile: ${customer.mobile}
-      Treatment: ${customer.treatment}
-      Treatment Cost: $${customer.treatmentCost}
-      Paid Amount: $${customer.paidAmount}
-      Balance: $${balance}
-    `;
+    <div style="border: 2px solid black; padding: 10px;"> <!-- Adding border style -->
+    <div style="text-align: center;">
+        <h1>Bill</h1>
+        <p>Date & Time: ${currentDate}</p>
+    </div>
 
+    <div style="text-align: left; margin-left: auto; margin-right: auto; max-width: 400px;">
+        <ul style="list-style-type: disc;">
+            <li>Customer Name: ${customer.name}</li>
+            <li>Mobile: ${customer.mobile}</li>
+            <li>Treatment: ${customer.treatment}</li>
+            <li>Treatment Cost: ${formatAmount(customer.treatmentCost)}</li>
+            <li>Paid Amount: ${formatAmount(customer.paidAmount)}</li>
+            <li>Balance: ${formatAmount(parseFloat(balance))}</li>
+        </ul>
+    </div>
+</div>
+    `;
+  
     const billWindow = window.open("", "_blank");
     if (billWindow) {
-      billWindow.document.write(`<pre>${billContent}</pre>`);
+      billWindow.document.write(billContent);
       billWindow.document.close();
       billWindow.print();
     } else {
       alert("Please allow pop-ups for this site to print the bill.");
     }
   };
-
+  
   const handleClearForm = () => {
     setCustomer({
       name: "",
