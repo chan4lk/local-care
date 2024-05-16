@@ -109,7 +109,7 @@ export const ViewDB = () => {
     const currentDate = new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }); // Get current date and time in Colombo timezone
   
     const billContent = `
-    <div style="border: 2px solid black; padding: 10px;"> <!-- Adding border style -->
+    <div >
     <div style="text-align: center;">
         <h1>Bill</h1>
         <p>Date & Time: ${currentDate}</p>
