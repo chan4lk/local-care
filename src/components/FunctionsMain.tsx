@@ -12,7 +12,7 @@ interface Customer {
   paidAmount: number;
 }
 
-export const ViewDB = () => {
+export const FunctionsMain = () => {
   const [customer, setCustomer] = useState<Customer>({
     name: "",
     mobile: "",
@@ -20,7 +20,7 @@ export const ViewDB = () => {
     treatmentCost: 0,
     paidAmount: 0,
   });
-  const [balance, setBalance] = useState<string>("0.00");
+  const [balance, setBalance] = useState<string>("0.00 LKR");
   const [searchText, setSearchText] = useState<string>("");
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -98,7 +98,7 @@ export const ViewDB = () => {
 
   useEffect(() => {
     const calculatedBalance = (customer.treatmentCost - customer.paidAmount).toFixed(2);
-    setBalance(`$${calculatedBalance}`);
+    setBalance(`LKR ${calculatedBalance}`);
   }, [customer.treatmentCost, customer.paidAmount]);
 
   const handlePrintBill = () => {
@@ -108,24 +108,26 @@ export const ViewDB = () => {
   
     const currentDate = new Date().toLocaleString('en-US', { timeZone: 'Asia/Colombo' }); // Get current date and time in Colombo timezone
   
+    // Calculate the balance again as a number
+    const calculatedBalance = (customer.treatmentCost - customer.paidAmount).toFixed(2);
+  
     const billContent = `
-    <div >
-    <div style="text-align: center;">
+    <div>
+      <div style="text-align: center;">
         <h1>Bill</h1>
         <p>Date & Time: ${currentDate}</p>
-    </div>
-
-    <div style="text-align: left; margin-left: auto; margin-right: auto; max-width: 400px;">
+      </div>
+      <div style="text-align: left; margin-left: auto; margin-right: auto; max-width: 400px;">
         <ul style="list-style-type: disc;">
-            <li>Customer Name: ${customer.name}</li>
-            <li>Mobile: ${customer.mobile}</li>
-            <li>Treatment: ${customer.treatment}</li>
-            <li>Treatment Cost: ${formatAmount(customer.treatmentCost)}</li>
-            <li>Paid Amount: ${formatAmount(customer.paidAmount)}</li>
-            <li>Balance: ${formatAmount(parseFloat(balance))}</li>
+          <li>Customer Name: ${customer.name}</li>
+          <li>Mobile: ${customer.mobile}</li>
+          <li>Treatment: ${customer.treatment}</li>
+          <li>Treatment Cost: ${formatAmount(customer.treatmentCost)}</li>
+          <li>Paid Amount: ${formatAmount(customer.paidAmount)}</li>
+          <li>Balance: ${formatAmount(parseFloat(calculatedBalance))}</li>
         </ul>
+      </div>
     </div>
-</div>
     `;
   
     const billWindow = window.open("", "_blank");
@@ -199,4 +201,4 @@ export const ViewDB = () => {
   );
 };
 
-export default ViewDB;
+export default FunctionsMain;

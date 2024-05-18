@@ -1,17 +1,16 @@
-// SearchBar.tsx
-import React, { ChangeEvent } from "react";
-import { FaSearch } from "react-icons/fa";
+import React, { ChangeEvent } from 'react';
+import { FaSearch } from 'react-icons/fa';
 
 interface SearchBarProps {
   searchText: string;
   handleSearchTextChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleSearch: () => void; // Function to handle the search
+  handleSearch: () => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ searchText, handleSearchTextChange, handleSearch }) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch(); // Call handleSearch when Enter key is pressed
+    if (e.key === 'Enter') {
+      handleSearch();
     }
   };
 
@@ -27,16 +26,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchText, handleSearchTextChang
           <input
             type="text"
             id="search"
-            className="input-field pl-2 pr-8 outline-none" // Adjust padding
+            className="input-field pl-2 pr-8 outline-none"
             value={searchText}
             onChange={handleSearchTextChange}
-            onKeyDown={handleKeyDown} // Listen for Enter key press
+            onKeyDown={handleKeyDown}
             placeholder="Enter Name or Mobile Number"
           />
           <button
-            type="button" // Ensure it's not submitting the form
+            type="button"
             className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none focus:outline-none"
-            onClick={handleSearch} // Call handleSearch when button is clicked
+            onClick={handleSearch}
           >
             <FaSearch className="text-gray-400" />
           </button>
@@ -44,7 +43,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchText, handleSearchTextChang
       </div>
 
       <div>
-      <p className="text-xs mb-1">(Patient ID, Name, Mobile Number)</p>
+        <p className="text-xs mb-1">(Patient ID, Name, Mobile Number)</p>
       </div>
     </div>
   );

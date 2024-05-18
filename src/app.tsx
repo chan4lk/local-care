@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
-import { ViewDB } from './components/ViewDB';
+import { FunctionsMain } from './components/FunctionsMain';
 
 
 const root = createRoot(document.getElementById('root'));
-root.render(<ViewDB />);
+root.render(<FunctionsMain />);

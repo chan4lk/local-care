@@ -47,7 +47,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
               id="name"
               value={customer.name}
               onChange={handleNameChange}
-              onFocus={() => clearDefaultValue("name")}
+              onFocus={() => clearDefaultValue('name')}
               className="input-field border border-gray-300 rounded-md p-2 flex-grow"
               required
             />
@@ -85,9 +85,9 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             <input
               type="number"
               id="treatmentCost"
-              value={customer.treatmentCost === 0 ? "" : customer.treatmentCost}
+              value={customer.treatmentCost === 0 ? '' : customer.treatmentCost}
               onChange={handleTreatmentCostChange}
-              onFocus={() => clearDefaultValue("treatmentCost")}
+              onFocus={() => clearDefaultValue('treatmentCost')}
               className="input-field border border-gray-300 rounded-md p-2 flex-grow"
             />
           </div>
@@ -99,9 +99,9 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
             <input
               type="number"
               id="paidAmount"
-              value={customer.paidAmount === 0 ? "" : customer.paidAmount}
+              value={customer.paidAmount === 0 ? '' : customer.paidAmount}
               onChange={handlePaidAmountChange}
-              onFocus={() => clearDefaultValue("paidAmount")}
+              onFocus={() => clearDefaultValue('paidAmount')}
               className="input-field border border-gray-300 rounded-md p-2 flex-grow"
             />
           </div>
