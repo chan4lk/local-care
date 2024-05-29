@@ -1,10 +1,38 @@
+import React, { useRef, useState } from "react";
 import { Formik } from "formik";
+import { useReactToPrint } from "react-to-print";
 import { SimpleInput } from "../components/SimpleInput";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { IPatient, ITransactionStatus } from "../types/electron-api";
+import BillFormat from './BillFormat';
+
+interface FormValues {
+  fullname: string;
+  mobile: string;
+  treatment: string;
+  total_amount: string;
+  paid_amount: string;
+  previous_paid?: string; // Make previous_paid optional
+}
 
 export const NewPatient = () => {
+  const printRef = useRef(null);
+  const [patientData, setPatientData] = useState(null);
+
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+    trigger: () => (
+      <button
+        type="button"
+        onClick={handlePrint}
+        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo"
+      >
+        Print Bill
+      </button>
+    ),
+  });
+
   return (
     <div className="container mx-auto">
       <div className="flex items-center ">
@@ -18,6 +46,7 @@ export const NewPatient = () => {
           treatment: "",
           total_amount: "",
           paid_amount: "",
+          previous_paid: "", // Add previous_paid here
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
@@ -52,16 +81,20 @@ export const NewPatient = () => {
           console.log("Fetch: ");
           console.table(await window.electronAPI.fetchAll());
           resetForm();
+
+          // Set the patient data after submission
+          setPatientData({
+            patient: {
+              fullname: values.fullname,
+              mobile: values.mobile,
+              patientRegistrationId: '12345', // Example ID
+              referenceNumber: 'BILL123', // Example bill number
+            },
+            values,
+          });
         }}
       >
-        {({
-          values,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-          /* and other goodies */
-        }) => (
+        {({ handleSubmit, isSubmitting, values, handleChange, handleBlur }) => (
           <form onSubmit={handleSubmit} className="space-y-6">
             <SimpleInput
               handleBlur={handleBlur}
@@ -84,7 +117,6 @@ export const NewPatient = () => {
               label="Treatment"
               field="treatment"
             />
-
             <div className="flex items-center justify-between">
               <SimpleInput
                 handleBlur={handleBlur}
@@ -134,6 +166,14 @@ export const NewPatient = () => {
           </form>
         )}
       </Formik>
+      {/* Render the BillFormat component after form submission */}
+      {patientData && (
+        <BillFormat
+          ref={printRef}
+          patient={patientData.patient}
+          values={patientData.values}
+        />
+      )}
     </div>
   );
 };
