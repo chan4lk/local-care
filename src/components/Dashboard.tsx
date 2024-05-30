@@ -2,12 +2,15 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
 import DailySummary from "./DailySummary";
+import MonthlySummary from "./MonthlySummary"; // Import MonthlySummary component
 
 export const Dashboard = () => {
   const navigate = useNavigate();
   const [patients, setPatients] = useState([]);
   const [showDailySummary, setShowDailySummary] = useState(false);
+  const [showMonthlySummary, setShowMonthlySummary] = useState(false);
   const dailySummaryRef = useRef();
+  const monthlySummaryRef = useRef();
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -31,12 +34,21 @@ export const Dashboard = () => {
   const goToExisting = () => navigate(`/existing`);
 
   const handleToggleDailySummary = () => {
-    setShowDailySummary(prevState => !prevState);
+    setShowDailySummary((prevState) => !prevState);
+  };
+
+  const handleToggleMonthlySummary = () => {
+    setShowMonthlySummary((prevState) => !prevState);
   };
 
   const handlePrintDailySummary = useReactToPrint({
     content: () => dailySummaryRef.current,
-    trigger: () => <button ref={printButtonRef} style={{ display: 'none' }}>Print</button>
+    trigger: () => <button ref={printButtonRef} style={{ display: "none" }}>Print</button>,
+  });
+
+  const handlePrintMonthlySummary = useReactToPrint({
+    content: () => monthlySummaryRef.current,
+    trigger: () => <button ref={printButtonRef} style={{ display: "none" }}>Print</button>,
   });
 
   const printButtonRef = useRef<HTMLButtonElement>(null);
@@ -61,22 +73,22 @@ export const Dashboard = () => {
           <h2 className="text-lg font-bold">Existing Patient</h2>
           <p className="text-sm">Update existing record.</p>
         </div>
-        </div>
+      </div>
 
-      
-
-
-<div className="flex justify-center">
-  <button
-    onClick={handleToggleDailySummary}
-    className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-  >
-    {showDailySummary ? "Hide Daily Summary" : "Show Daily Summary"}
-  </button>
-</div>
-
-
-      
+      <div className="flex justify-center">
+        <button
+          onClick={handleToggleDailySummary}
+          className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+        >
+          {showDailySummary ? "Hide Daily Summary" : "Show Daily Summary"}
+        </button>
+        <button
+          onClick={handleToggleMonthlySummary}
+          className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400 ml-4"
+        >
+          {showMonthlySummary ? "Hide Monthly Summary" : "Show Monthly Summary"}
+        </button>
+      </div>
 
       {showDailySummary && (
         <div className="flex flex-wrap justify-center mt-8" ref={dailySummaryRef}>
@@ -85,13 +97,30 @@ export const Dashboard = () => {
           </div>
         </div>
       )}
+      {showMonthlySummary && (
+        <div className="flex flex-wrap justify-center mt-8" ref={monthlySummaryRef}>
+          <div className="w-full mt-4">
+            <MonthlySummary patients={patients} />
+          </div>
+        </div>
+      )}
       {showDailySummary && (
         <div className="flex justify-center mt-4">
           <button
             onClick={handlePrintDailySummary}
             className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-            >
+          >
             Print Daily Summary
+          </button>
+        </div>
+      )}
+      {showMonthlySummary && (
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={handlePrintMonthlySummary}
+            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+          >
+            Print Monthly Summary
           </button>
         </div>
       )}
