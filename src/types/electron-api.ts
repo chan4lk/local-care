@@ -5,6 +5,8 @@ export interface IPatient {
     treatment: string;
     invoice: IInvoice;
     createdAt?: Date;
+    patientRegistrationId: string; // Add this line
+
 }
 export interface IInvoice{
     id?: number;

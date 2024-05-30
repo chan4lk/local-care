@@ -1,10 +1,42 @@
+import React, { useRef, useState } from "react";
 import { Formik } from "formik";
+import { useReactToPrint } from "react-to-print";
 import { SimpleInput } from "../components/SimpleInput";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { IPatient, ITransactionStatus } from "../types/electron-api";
+import BillFormat from './BillFormat';
+
+interface FormValues {
+  fullname: string;
+  mobile: string;
+  treatment: string;
+  total_amount: string;
+  paid_amount: string;
+  payment_type: string; // Add payment_type field
+  previous_paid?: string; // Make previous_paid optional
+}
 
 export const NewPatient = () => {
+  const printRef = useRef(null);
+  const summaryPrintRef = useRef(null); // Reference for daily summary print
+  const [patientData, setPatientData] = useState(null);
+  const [patients, setPatients] = useState([]); // State to store all patients
+  const [shouldPrint, setShouldPrint] = useState(false); // State to track print action
+
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+    trigger: () => <button ref={printButtonRef}>Print Bill</button>, // Pass React element
+  });
+
+  const handleSummaryPrint = useReactToPrint({
+    content: () => summaryPrintRef.current,
+    trigger: () => <button ref={summaryPrintButtonRef}>Print Daily Summary</button>, // Pass React element
+  });
+
+  const printButtonRef = useRef<HTMLButtonElement>(null); // Ref for print button
+  const summaryPrintButtonRef = useRef<HTMLButtonElement>(null); // Ref for summary print button
+
   return (
     <div className="container mx-auto">
       <div className="flex items-center ">
@@ -18,6 +50,8 @@ export const NewPatient = () => {
           treatment: "",
           total_amount: "",
           paid_amount: "",
+          payment_type: "Cash", // Default to Cash
+          previous_paid: "", // Add previous_paid here
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
@@ -40,7 +74,7 @@ export const NewPatient = () => {
                 {
                   status: ITransactionStatus.Paid,
                   amount: parseFloat(values.paid_amount || "0"),
-                  description: "Paid Amount",
+                  description: `Paid Amount (${values.payment_type})`,
                 },
               ],
             },
@@ -50,18 +84,25 @@ export const NewPatient = () => {
           console.log("Insert: ");
           console.table(insert);
           console.log("Fetch: ");
-          console.table(await window.electronAPI.fetchAll());
+          const allPatients = await window.electronAPI.fetchAll();
+          console.table(allPatients);
+          setPatients(allPatients); // Update the patients state with all patients
           resetForm();
+
+          // Set the patient data after submission
+          setPatientData({
+            patient: {
+              fullname: values.fullname,
+              mobile: values.mobile,
+              patientRegistrationId: '12345', // Example ID
+              referenceNumber: 'BILL123', // Example bill number
+            },
+            values,
+          });
+          setShouldPrint(true); // Set state to trigger print action
         }}
       >
-        {({
-          values,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-          /* and other goodies */
-        }) => (
+        {({ handleSubmit, isSubmitting, values, handleChange, handleBlur }) => (
           <form onSubmit={handleSubmit} className="space-y-6">
             <SimpleInput
               handleBlur={handleBlur}
@@ -84,7 +125,6 @@ export const NewPatient = () => {
               label="Treatment"
               field="treatment"
             />
-
             <div className="flex items-center justify-between">
               <SimpleInput
                 handleBlur={handleBlur}
@@ -101,6 +141,26 @@ export const NewPatient = () => {
                 field="paid_amount"
               />
             </div>
+            <div className="flex flex-col">
+  <label
+    htmlFor="payment_type"
+    className="block text-sm font-medium text-gray-700 mb-2"
+  >
+    Payment Type
+  </label>
+  <select
+    id="payment_type"
+    name="payment_type"
+    value={values.payment_type}
+    onChange={handleChange}
+    onBlur={handleBlur}
+    className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
+  >
+    <option value="Cash">Cash</option>
+    <option value="Card">Card</option>
+  </select>
+</div>
+
             <div className="flex items-center justify-between">
               <div></div>
               <div className="flex items-center">
@@ -122,18 +182,41 @@ export const NewPatient = () => {
                 </span>
               </div>
             </div>
-            <div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo"
+            <div className="flex justify-center">
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
               >
-                Submit
-              </button>
+              Submit
+            </button>
             </div>
           </form>
         )}
       </Formik>
+      {/* Render the BillFormat component after form submission and when shouldPrint is true */}
+      {patientData && shouldPrint && (
+        <BillFormat
+          ref={printRef}
+          patient={patientData.patient}
+          values={patientData.values}
+        />
+      )}
+      {/* Render the print button when patientData is available */}
+      {patientData && (
+        <div className="flex justify-center mt-56">
+          <button
+            id="print-bill-button" // Add id for the print button
+            ref={printButtonRef} // Attach ref to the print button
+            onClick={handlePrint}
+            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+            >
+            Print Bill
+          </button>
+        </div>
+      )}
+
     </div>
   );
 };
