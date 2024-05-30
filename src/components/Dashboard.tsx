@@ -69,7 +69,7 @@ export const Dashboard = () => {
 <div className="flex justify-center">
   <button
     onClick={handleToggleDailySummary}
-    className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-indigo-700"
+    className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
   >
     {showDailySummary ? "Hide Daily Summary" : "Show Daily Summary"}
   </button>
@@ -89,8 +89,8 @@ export const Dashboard = () => {
         <div className="flex justify-center mt-4">
           <button
             onClick={handlePrintDailySummary}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700"
-          >
+            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+            >
             Print Daily Summary
           </button>
         </div>

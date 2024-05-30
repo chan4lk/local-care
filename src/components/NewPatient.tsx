@@ -187,7 +187,7 @@ export const NewPatient = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="py-2 px-4 border border-transparent rounded-md shadow-sm text-black font-bold bg-blue-300 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo"
+              className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
               >
               Submit
             </button>
@@ -210,7 +210,7 @@ export const NewPatient = () => {
             id="print-bill-button" // Add id for the print button
             ref={printButtonRef} // Attach ref to the print button
             onClick={handlePrint}
-            className="py-2 px-4 border border-transparent rounded-md shadow-sm text-black font-bold bg-blue-300 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo"
+            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
             >
             Print Bill
           </button>

@@ -25,8 +25,8 @@ export const SimpleSelect: React.FC<SimpleSelectProps> =
       onChange={handleChange}
       onBlur={handleBlur}
       value={values[field]}
-      className="mt-1 block w-full py-2 px-3 border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-    >
+      className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+      >
         {options.map(option => <option key={option.label} value={option.value}>{option.label}</option>)}
     </select>
     <ErrorMessage
