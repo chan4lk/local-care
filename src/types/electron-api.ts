@@ -24,11 +24,14 @@ export interface ITransaction {
     id?: number;
     description?: string;
     amount: number;
-    status: ITransactionStatus
+    status: ITransactionStatus;
+    name?:string;
+    mobile?:string;
 }
 
 export interface ElectronAPI {
     insertPatient: (args: IPatient) =>  Promise<IPatient>
     fetchAll: () =>  Promise<IPatient[]>
     search: ({keyword}: {keyword:string}) =>  Promise<IPatient[]>
+    fetchPaidByDateRange: (args: { start: Date, end: Date }) =>  Promise<ITransaction[]>
 }
