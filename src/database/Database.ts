@@ -4,7 +4,7 @@ import Patient from './models/Patient';
 import { DataSource, Like } from "typeorm"
 import Invoice from './models/Invoice';
 import Transaction from './models/Transaction';
-import { IPatient } from '../types/electron-api';
+import { IPatient, ITransaction, ITransactionStatus } from '../types/electron-api';
 export default class Database {
     private connection: DataSource;
 
@@ -45,7 +45,7 @@ export default class Database {
             element.invoice = invoice;
             await transactionRepository.save(element);
         });
-        
+
         return patient;
     }
 
@@ -76,5 +76,39 @@ export default class Database {
                 }
             }
         });
+    }
+
+    public async fetchTransactionsByDate({ start, end }: { start: Date, end: Date }): Promise<ITransaction[]> {
+        const transactionRepository = this.connection.getRepository(Transaction);
+
+        const startDate = new Date(start); // adjust to your desired start date
+        startDate.setHours(0);
+        startDate.setMinutes(0);
+        startDate.setSeconds(0);
+
+        const endDate = new Date(end); // adjust to your desired end date
+        endDate.setHours(23); // 23:59:59 PM
+        endDate.setMinutes(59);
+        endDate.setSeconds(59);
+
+        return await transactionRepository
+            .createQueryBuilder('transaction')
+            .innerJoin('transaction.invoice', 'invoice')
+            .innerJoin('invoice.patient', 'patient')  // <--- join invoice.patient to get patient data
+            .where('transaction.status = :status', { status: ITransactionStatus.Paid })
+            .andWhere("strftime('%d', transaction.createdAt) BETWEEN strftime('%d', :startDate) AND strftime('%d', :endDate)", {
+                startDate,
+                endDate,
+            })
+            .select([
+                'transaction.id AS id',
+                'transaction.createdAt AS createdAt',
+                'transaction.description AS description',
+                'transaction.status AS status',
+                'transaction.amount AS amount',
+                'patient.fullname AS name', // alias fullname as name
+                'patient.mobile AS mobile', // alias mobile as mobile
+            ])
+            .getRawMany();
     }
 }

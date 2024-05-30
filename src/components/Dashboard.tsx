@@ -15,10 +15,15 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch("your-api-endpoint");
-        if (response.ok) {
-          const data = await response.json();
-          setPatients(data);
+        const today = new Date();
+
+        const transactions = await window.electronAPI.fetchPaidByDateRange({
+          start: today,
+          end: today,
+        });
+        console.log(transactions);
+        if (transactions && transactions.length) {
+          setPatients(transactions);
         } else {
           throw new Error("Failed to fetch patients data");
         }
@@ -43,12 +48,20 @@ export const Dashboard = () => {
 
   const handlePrintDailySummary = useReactToPrint({
     content: () => dailySummaryRef.current,
-    trigger: () => <button ref={printButtonRef} style={{ display: "none" }}>Print</button>,
+    trigger: () => (
+      <button ref={printButtonRef} style={{ display: "none" }}>
+        Print
+      </button>
+    ),
   });
 
   const handlePrintMonthlySummary = useReactToPrint({
     content: () => monthlySummaryRef.current,
-    trigger: () => <button ref={printButtonRef} style={{ display: "none" }}>Print</button>,
+    trigger: () => (
+      <button ref={printButtonRef} style={{ display: "none" }}>
+        Print
+      </button>
+    ),
   });
 
   const printButtonRef = useRef<HTMLButtonElement>(null);
@@ -56,7 +69,9 @@ export const Dashboard = () => {
   return (
     <div className="container w-full">
       <div className="flex flex-wrap justify-center mt-4">
-        <h1 className="text-3xl font-bold mb-4">Rosewood Dental & Medical Hospital</h1>
+        <h1 className="text-3xl font-bold mb-4">
+          Rosewood Dental & Medical Hospital
+        </h1>
       </div>
       <div className="flex flex-wrap justify-center">
         <div
@@ -91,14 +106,20 @@ export const Dashboard = () => {
       </div>
 
       {showDailySummary && (
-        <div className="flex flex-wrap justify-center mt-8" ref={dailySummaryRef}>
+        <div
+          className="flex flex-wrap justify-center mt-8"
+          ref={dailySummaryRef}
+        >
           <div className="w-full mt-4">
             <DailySummary patients={patients} />
           </div>
         </div>
       )}
       {showMonthlySummary && (
-        <div className="flex flex-wrap justify-center mt-8" ref={monthlySummaryRef}>
+        <div
+          className="flex flex-wrap justify-center mt-8"
+          ref={monthlySummaryRef}
+        >
           <div className="w-full mt-4">
             <MonthlySummary patients={patients} />
           </div>
