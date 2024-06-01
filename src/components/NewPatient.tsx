@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Formik } from "formik";
-import { useReactToPrint } from "react-to-print";
+import { useReactToPrint, ReactToPrintProps } from "react-to-print";
 import { SimpleInput } from "../components/SimpleInput";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
@@ -19,23 +19,12 @@ interface FormValues {
 
 export const NewPatient = () => {
   const printRef = useRef(null);
-  const summaryPrintRef = useRef(null); // Reference for daily summary print
   const [patientData, setPatientData] = useState(null);
-  const [patients, setPatients] = useState([]); // State to store all patients
-  const [shouldPrint, setShouldPrint] = useState(false); // State to track print action
+  const [patients, setPatients] = useState<IPatient[]>([]); // State to store all patients
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    trigger: () => <button ref={printButtonRef}>Print Bill</button>, // Pass React element
-  });
-
-  const handleSummaryPrint = useReactToPrint({
-    content: () => summaryPrintRef.current,
-    trigger: () => <button ref={summaryPrintButtonRef}>Print Daily Summary</button>, // Pass React element
-  });
-
-  const printButtonRef = useRef<HTMLButtonElement>(null); // Ref for print button
-  const summaryPrintButtonRef = useRef<HTMLButtonElement>(null); // Ref for summary print button
+  } as ReactToPrintProps);
 
   return (
     <div className="container mx-auto">
@@ -99,7 +88,6 @@ export const NewPatient = () => {
             },
             values,
           });
-          setShouldPrint(true); // Set state to trigger print action
         }}
       >
         {({ handleSubmit, isSubmitting, values, handleChange, handleBlur }) => (
@@ -142,24 +130,24 @@ export const NewPatient = () => {
               />
             </div>
             <div className="flex flex-col">
-  <label
-    htmlFor="payment_type"
-    className="block text-sm font-medium text-gray-700 mb-2"
-  >
-    Payment Type
-  </label>
-  <select
-    id="payment_type"
-    name="payment_type"
-    value={values.payment_type}
-    onChange={handleChange}
-    onBlur={handleBlur}
-    className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
-  >
-    <option value="Cash">Cash</option>
-    <option value="Card">Card</option>
-  </select>
-</div>
+              <label
+                htmlFor="payment_type"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Payment Type
+              </label>
+              <select
+                id="payment_type"
+                name="payment_type"
+                value={values.payment_type}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
+              >
+                <option value="Cash">Cash</option>
+                <option value="Card">Card</option>
+              </select>
+            </div>
 
             <div className="flex items-center justify-between">
               <div></div>
@@ -182,41 +170,43 @@ export const NewPatient = () => {
                 </span>
               </div>
             </div>
-            <div className="flex justify-center">
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-              >
-              Submit
-            </button>
-            </div>
-          </form>
-        )}
-      </Formik>
-      {/* Render the BillFormat component after form submission and when shouldPrint is true */}
-      {patientData && shouldPrint && (
-        <BillFormat
-          ref={printRef}
-          patient={patientData.patient}
-          values={patientData.values}
-        />
-      )}
-      {/* Render the print button when patientData is available */}
+            <div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+                >
+                Submit
+              </button>
+              {/* Render the print button when patientData is available */}
       {patientData && (
-        <div className="flex justify-center mt-56">
           <button
             id="print-bill-button" // Add id for the print button
-            ref={printButtonRef} // Attach ref to the print button
             onClick={handlePrint}
-            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+            className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
             >
             Print Bill
           </button>
+      )}
+              </div>
+          </form>
+        )}
+      </Formik>
+
+      {/* Render the BillFormat component after form submission */}
+      {patientData && (
+        <div className="hidden">
+          <BillFormat
+            ref={printRef}
+            patient={patientData.patient}
+            values={patientData.values}
+          />
         </div>
       )}
 
+      
     </div>
   );
 };
+
+export default NewPatient;

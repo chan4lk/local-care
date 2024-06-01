@@ -5,6 +5,7 @@ import { DataSource, Like } from "typeorm"
 import Invoice from './models/Invoice';
 import Transaction from './models/Transaction';
 import { IPatient } from '../types/electron-api';
+
 export default class Database {
     private connection: DataSource;
 
@@ -39,6 +40,7 @@ export default class Database {
 
         const invoice = patientDetails.invoice as unknown as Invoice;
         invoice.patient = patient;
+        invoice.paymentMethod = patientDetails.paymentMethod; // Set the payment method
         await invoiceRepository.save(patientDetails.invoice as unknown);
 
         invoice.transactions.forEach(async element => {

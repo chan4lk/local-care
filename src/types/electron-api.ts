@@ -5,7 +5,9 @@ export interface IPatient {
     treatment: string;
     invoice: IInvoice;
     createdAt?: Date;
-    patientRegistrationId: string; // Add this line
+    patientRegistrationId: string; 
+    paymentMethod: string;
+
 
 }
 export interface IInvoice{
@@ -13,6 +15,8 @@ export interface IInvoice{
     description?: string;
     total: number;
     transactions: ITransaction[];
+    paymentMethod: string;
+
 }
 
 export enum ITransactionStatus {

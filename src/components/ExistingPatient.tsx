@@ -1,12 +1,21 @@
 import React, { useRef, useState } from 'react';
 import { Formik } from 'formik';
-import { useReactToPrint } from 'react-to-print';
+import { useReactToPrint, ReactToPrintProps } from "react-to-print";
 import { SimpleInput } from '../components/SimpleInput';
 import { validationSchema } from './Schema';
 import { Back } from './BackButton';
 import { Search } from './Search';
 import { IPatient, ITransactionStatus } from '../types/electron-api';
-import BillFormat from './BillFormat'; // Adjust the import path as needed
+import BillFormat from './BillFormat'; 
+interface FormValues {
+  fullname: string;
+  mobile: string;
+  treatment: string;
+  total_amount: string;
+  paid_amount: string;
+  payment_type: string; 
+  previous_paid?: string; 
+}
 
 export const ExistingPatient = () => {
   const [patient, setPatient] = useState<IPatient | null>(null);
@@ -14,15 +23,7 @@ export const ExistingPatient = () => {
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    trigger: () => (
-      <button
-        type="button"
-        id="print-button"
-        className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-        >
-        Submit & Print
-      </button>
-    ),
+    trigger: () => <button style={{ display: 'none' }}>Print Trigger</button>, // Hidden button to satisfy the type requirement
   });
 
   return (
@@ -42,6 +43,7 @@ export const ExistingPatient = () => {
               .reduce((sum, current) => sum + current, 0)
               .toString(),
             paid_amount: '',
+            payment_type: "Cash",
             previous_paid: patient.invoice.transactions
               .filter((t) => t.status === ITransactionStatus.Paid)
               .map((t) => t.amount)
@@ -81,7 +83,6 @@ export const ExistingPatient = () => {
             const insert = await window.electronAPI.insertPatient(patientDetails);
             resetForm();
             setPatient(null);
-            handlePrint(); // Trigger the print
           }}
         >
           {({
@@ -130,6 +131,25 @@ export const ExistingPatient = () => {
                     field="paid_amount"
                   />
                 </div>
+                <div className="flex flex-col">
+              <label
+                htmlFor="payment_type"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Payment Type
+              </label>
+              <select
+                id="payment_type"
+                name="payment_type"
+                value={values.payment_type}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
+              >
+                <option value="Cash">Cash</option>
+                <option value="Card">Card</option>
+              </select>
+            </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <label htmlFor="amount_due" className="block text-sm font-medium text-gray-700 mr-4">
@@ -165,8 +185,15 @@ export const ExistingPatient = () => {
                     type="submit"
                     disabled={isSubmitting}
                     className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-                    >
+                  >
                     Submit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePrint}
+                    className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
+                  >
+                    Print Bill
                   </button>
                 </div>
               </form>

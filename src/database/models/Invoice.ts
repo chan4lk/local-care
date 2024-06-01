@@ -20,4 +20,7 @@ export default class Invoice extends Auditable{
 
     @OneToMany(() => Transaction, (transaction) => transaction.invoice)
     transactions: Relation<Transaction[]>;
+
+    @Column()
+    paymentMethod: string; 
 }

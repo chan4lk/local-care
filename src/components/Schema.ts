@@ -16,5 +16,5 @@ export const validationSchema = Yup.object().shape({
   paid_amount: Yup.number()
     .min(0, "Amount must be positive")
     .max(Yup.ref("total_amount"), "Amount must not exceed the total amount")
-    .required("Required"),
+    
 });
