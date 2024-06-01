@@ -34,7 +34,10 @@ const ReportPage = ({ patients }: { patients: IPatient[] }) => {
 
   return (
     <div className="container mx-auto mt-8">
-                <Back />
+               <div className="flex items-center">
+        <Back />
+        <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2"></h1>
+      </div>
       
       <div className="flex justify-center">
         <button
