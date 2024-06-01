@@ -45,7 +45,7 @@ export default class Database {
             element.invoice = invoice;
             await transactionRepository.save(element);
         });
-        
+    
         return patient;
     }
 
