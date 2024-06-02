@@ -1,4 +1,4 @@
-import { Entity, Column, JoinTable, PrimaryGeneratedColumn, ManyToOne, Relation, JoinColumn, OneToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Relation, JoinColumn, OneToOne, OneToMany } from 'typeorm';
 import Transaction from './Transaction';
 import Auditable from './Auditable';
 import Patient from './Patient';

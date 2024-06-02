@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, Index, ManyToOne, JoinColumn, Relation, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Index, Relation, OneToOne } from 'typeorm';
 import Auditable from './Auditable';
 import Invoice from './Invoice';
 
