@@ -1,90 +1,78 @@
-import React from 'react';
-import { IPatient, ITransactionStatus } from '../types/electron-api';
+import React, { useState, useEffect } from 'react';
+import { IPatient, ITransactionStatus, PaymentMethod } from '../types/electron-api';
 
 interface DailySummaryProps {
   patients: IPatient[];
 }
 
 const DailySummary: React.FC<DailySummaryProps> = ({ patients }) => {
-  const cashPayments = patients.filter(p => 
-    p.invoice.transactions.some(t => t.description.includes("Cash"))
-  );
+  const [totalCash, setTotalCash] = useState<number>(0);
+  const [totalCard, setTotalCard] = useState<number>(0);
 
-  const cardPayments = patients.filter(p => 
-    p.invoice.transactions.some(t => t.description.includes("Card"))
-  );
+  useEffect(() => {
+    let cashTotal = 0;
+    let cardTotal = 0;
 
-  const totalCash = cashPayments.reduce((sum, p) => 
-    sum + (p.invoice.transactions.find(t => t.description.includes("Cash"))?.amount || 0), 0
-  );
+    patients.forEach(patient => {
+      patient.invoice.transactions.forEach(transaction => {
+        if (transaction.status === ITransactionStatus.Paid) {
+          if (transaction.paymentMethod === PaymentMethod.Cash) {
+            cashTotal += transaction.amount;
+          } else if (transaction.paymentMethod === PaymentMethod.Card) {
+            cardTotal += transaction.amount;
+          }
+        }
+      });
+    });
 
-  const totalCard = cardPayments.reduce((sum, p) => 
-    sum + (p.invoice.transactions.find(t => t.description.includes("Card"))?.amount || 0), 0
-  );
+    setTotalCash(cashTotal);
+    setTotalCard(cardTotal);
+  }, [patients]);
 
   return (
     <div className="overflow-x-auto">
-      <h2 className="text-2xl font-bold mb-4"></h2>
-      <table className="min-w-full divide-y divide-gray-200">
+      <h2 className="text-2xl font-bold mb-4">Daily Summary</h2>
+      
+      {/* Summary Table */}
+      <table className="min-w-full divide-y divide-gray-200 mb-8">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Patient Name
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Mobile
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Amount Paid
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Payment Type
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Total Payment
-            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Method</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount Paid</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {patients.map((patient) => (
-            <tr key={patient.patientRegistrationId}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {patient.fullname}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {patient.mobile}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {patient.invoice.transactions.find(t => t.status === ITransactionStatus.Paid)?.amount}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {patient.invoice.transactions.find(t => t.status === ITransactionStatus.Paid)?.description.split(' ')[2]}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {patient.invoice.total}
-              </td>
-            </tr>
-          ))}
+          {patients.map((patient, index) => {
+            const totalPaid = patient.invoice.transactions
+              .filter(t => t.status === ITransactionStatus.Paid)
+              .reduce((sum, t) => sum + t.amount, 0);
+
+            const balanceDue = patient.invoice.total - totalPaid;
+            const lastTransaction = patient.invoice.transactions.find(t => t.status === ITransactionStatus.Paid);
+
+            return (
+              <tr key={index}>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{patient.fullname}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lastTransaction?.paymentMethod}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{totalPaid.toFixed(2)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{patient.invoice.total.toFixed(2)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{balanceDue.toFixed(2)}</td>
+              </tr>
+            );
+          })}
         </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan={2} className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              Total Cash Payments:
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              Rs. {totalCash.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
-            </td>
-          </tr>
-          <tr>
-            <td colSpan={2} className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              Total Card Payments:
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              Rs. {totalCard.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
-            </td>
-          </tr>
-        </tfoot>
       </table>
+
+      {/* Total Payments */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold">Total Cash Payments: Rs. {totalCash.toFixed(2)}</h3>
+      </div>
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold">Total Card Payments: Rs. {totalCard.toFixed(2)}</h3>
+      </div>
     </div>
   );
 };

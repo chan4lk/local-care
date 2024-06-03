@@ -7,8 +7,8 @@ export const Back = () => {
     <button
       onClick={back}
       type="button"
-      className="w-full flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 transition-colors duration-200 bg-white border rounded-lg gap-x-2 sm:w-auto dark:hover:bg-gray-800 dark:bg-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:border-gray-700"
-    >
+       className='bg-secondary border-secondary border rounded-full inline-flex items-center justify-center py-3 px-7 text-center text-base font-medium text-black hover:bg-[#0BB489] hover:border-[#0BB489] disabled:bg-gray-3 disabled:border-gray-3 disabled:text-dark-5'>
+      
       <svg
         className="w-5 h-5 rtl:rotate-180"
         xmlns="http://www.w3.org/2000/svg"

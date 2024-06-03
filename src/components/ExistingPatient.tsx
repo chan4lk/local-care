@@ -83,8 +83,7 @@ export const ExistingPatient = () => {
               },
             } as IPatient;
             const insert = await window.electronAPI.insertPatient(patientDetails);
-            resetForm();
-            setPatient(null);
+            
           }}
         >
           {({
@@ -148,8 +147,8 @@ export const ExistingPatient = () => {
                 onBlur={handleBlur}
                 className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
               >
-                <option value="cash">Cash</option>
-                <option value="card">Card</option>
+                <option value="Cash">cash</option>
+                <option value="Card">card</option>
               </select>
             </div>
                 <div className="flex items-center justify-between">
@@ -184,7 +183,8 @@ export const ExistingPatient = () => {
                 </div>
                 <div>
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={() => handleSubmit()} // Manually trigger form submission
                     disabled={isSubmitting}
                     className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
                   >

@@ -1,14 +1,11 @@
 import React, { useState, useRef } from "react";
-import DailySummary from "./DailySummary";
+import DailySummary from "./DailySummary"; // Ensure DailySummary is imported
 import MonthlySummary from "./MonthlySummary";
-import { IPatient } from '../types/electron-api'; // Import IPatient type if needed
-import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
-import { useReactToPrint } from "react-to-print"; // Import useReactToPrint hook
+import { IPatient } from '../types/electron-api';
+import { useReactToPrint } from "react-to-print";
 import { Back } from "./BackButton";
 
-
 const ReportPage = ({ patients }: { patients: IPatient[] }) => {
-  const navigate = useNavigate(); // Initialize the useNavigate hook
   const [showDailySummary, setShowDailySummary] = useState(false);
   const [showMonthlySummary, setShowMonthlySummary] = useState(false);
   const dailySummaryRef = useRef<any>(null);
@@ -34,7 +31,7 @@ const ReportPage = ({ patients }: { patients: IPatient[] }) => {
 
   return (
     <div className="container mx-auto mt-8">
-               <div className="flex items-center">
+      <div className="flex items-center">
         <Back />
         <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2"></h1>
       </div>
@@ -57,6 +54,7 @@ const ReportPage = ({ patients }: { patients: IPatient[] }) => {
       {showDailySummary && (
         <div className="flex flex-wrap justify-center mt-8" ref={dailySummaryRef}>
           <div className="w-full mt-4">
+            {/* Render DailySummary component */}
             <DailySummary patients={patients} />
           </div>
         </div>
