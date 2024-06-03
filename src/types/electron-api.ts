@@ -6,7 +6,6 @@ export interface IPatient {
     invoice: IInvoice;
     createdAt?: Date;
     patientRegistrationId: string; 
-    paymentMethod: string;
 
 
 }
@@ -15,7 +14,6 @@ export interface IInvoice{
     description?: string;
     total: number;
     transactions: ITransaction[];
-    paymentMethod: string;
 
 }
 
@@ -23,7 +21,12 @@ export enum ITransactionStatus {
     Pending = "pending",
     Paid = "paid",
 }
+export enum PaymentMethod {
+    Cash = "cash",
+    Card = "card",
+    None = "none"
 
+}
 export interface ITransaction {
     id?: number;
     description?: string;
@@ -31,6 +34,8 @@ export interface ITransaction {
     status: ITransactionStatus;
     name?:string;
     mobile?:string;
+    paymentMethod: PaymentMethod;
+
 }
 
 export interface ElectronAPI {

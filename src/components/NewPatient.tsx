@@ -4,7 +4,7 @@ import { useReactToPrint, ReactToPrintProps } from "react-to-print";
 import { SimpleInput } from "../components/SimpleInput";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
-import { IPatient, ITransactionStatus } from "../types/electron-api";
+import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-api";
 import BillFormat from './BillFormat';
 
 interface FormValues {
@@ -39,7 +39,7 @@ export const NewPatient = () => {
           treatment: "",
           total_amount: "",
           paid_amount: "",
-          payment_type: "Cash", // Default to Cash
+          payment_type: "cash", // Default to Cash
           previous_paid: "", // Add previous_paid here
         }}
         validationSchema={validationSchema}
@@ -59,11 +59,14 @@ export const NewPatient = () => {
                   status: ITransactionStatus.Pending,
                   amount: pendingAmount,
                   description: "Pending Payment",
+                  paymentMethod: PaymentMethod.None
                 },
                 {
                   status: ITransactionStatus.Paid,
                   amount: parseFloat(values.paid_amount || "0"),
                   description: `Paid Amount (${values.payment_type})`,
+                  paymentMethod: values.payment_type,
+
                 },
               ],
             },

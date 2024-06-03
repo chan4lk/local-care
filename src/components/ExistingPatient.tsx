@@ -5,7 +5,7 @@ import { SimpleInput } from '../components/SimpleInput';
 import { validationSchema } from './Schema';
 import { Back } from './BackButton';
 import { Search } from './Search';
-import { IPatient, ITransactionStatus } from '../types/electron-api';
+import { IPatient, ITransactionStatus, PaymentMethod } from '../types/electron-api';
 import BillFormat from './BillFormat'; 
 interface FormValues {
   fullname: string;
@@ -43,7 +43,7 @@ export const ExistingPatient = () => {
               .reduce((sum, current) => sum + current, 0)
               .toString(),
             paid_amount: '',
-            payment_type: "Cash",
+            payment_type: "cash",
             previous_paid: patient.invoice.transactions
               .filter((t) => t.status === ITransactionStatus.Paid)
               .map((t) => t.amount)
@@ -70,12 +70,14 @@ export const ExistingPatient = () => {
                     status: ITransactionStatus.Pending,
                     amount: pendingAmount,
                     description: 'Pending Payment',
+                    paymentMethod: PaymentMethod.None
                   },
                   {
                     id: patient.invoice.transactions.find((t) => t.status === ITransactionStatus.Pending)?.id,
                     status: ITransactionStatus.Paid,
                     amount: parseFloat(values.paid_amount || '0'),
                     description: 'Paid Amount',
+                    paymentMethod: values.payment_type,
                   },
                 ],
               },
@@ -146,8 +148,8 @@ export const ExistingPatient = () => {
                 onBlur={handleBlur}
                 className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
               >
-                <option value="Cash">Cash</option>
-                <option value="Card">Card</option>
+                <option value="cash">Cash</option>
+                <option value="card">Card</option>
               </select>
             </div>
                 <div className="flex items-center justify-between">
