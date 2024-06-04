@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { IPatient, ITransactionStatus, PaymentMethod } from '../types/electron-api';
+import { ITransaction, ITransactionStatus, PaymentMethod } from '../types/electron-api';
 
 interface DailySummaryProps {
-  patients: IPatient[];
+  transactions: ITransaction[];
 }
 
-const DailySummary: React.FC<DailySummaryProps> = ({ patients }) => {
+const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
   const [totalCash, setTotalCash] = useState<number>(0);
   const [totalCard, setTotalCard] = useState<number>(0);
 
   useEffect(() => {
     let cashTotal = 0;
     let cardTotal = 0;
-
-    patients.forEach(patient => {
-      patient.invoice.transactions.forEach(transaction => {
+    console.log(transactions);
+    
+    transactions.forEach(transaction => {
         if (transaction.status === ITransactionStatus.Paid) {
           if (transaction.paymentMethod === PaymentMethod.Cash) {
             cashTotal += transaction.amount;
@@ -22,12 +22,11 @@ const DailySummary: React.FC<DailySummaryProps> = ({ patients }) => {
             cardTotal += transaction.amount;
           }
         }
-      });
     });
 
     setTotalCash(cashTotal);
     setTotalCard(cardTotal);
-  }, [patients]);
+  }, [transactions]);
 
   return (
     <div className="overflow-x-auto">
@@ -39,27 +38,20 @@ const DailySummary: React.FC<DailySummaryProps> = ({ patients }) => {
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient Name</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Method</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount Paid</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Balance</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {patients.map((patient, index) => {
-            const totalPaid = patient.invoice.transactions
-              .filter(t => t.status === ITransactionStatus.Paid)
-              .reduce((sum, t) => sum + t.amount, 0);
-
-            const balanceDue = patient.invoice.total - totalPaid;
-            const lastTransaction = patient.invoice.transactions.find(t => t.status === ITransactionStatus.Paid);
-
+          {transactions.map((transaction, index) => {
+            const totalPaid = transaction.amount;
+            
             return (
               <tr key={index}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{patient.fullname}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{lastTransaction?.paymentMethod}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{transaction.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{transaction.paymentMethod}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{transaction.createdAt}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{totalPaid.toFixed(2)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{patient.invoice.total.toFixed(2)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{balanceDue.toFixed(2)}</td>
               </tr>
             );
           })}
