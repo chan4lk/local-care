@@ -27,11 +27,10 @@ export const ExistingPatient = () => {
   });
 
   return (
-    <div className="container mx-auto">
-      <div className="flex items-center">
+    <div className="container mx-auto mt-4">
         <Back />
-        <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2">Existing Patient</h1>
-      </div>
+        <h1 className="text-3xl font-bold mb-4 text-center hover:text-green-500 transition-colors duration-300">
+Existing Patient</h1>
       {patient == null ? (
         <Search setPatient={setPatient} />
       ) : (
@@ -186,15 +185,15 @@ export const ExistingPatient = () => {
                     type="button"
                     onClick={() => handleSubmit()} // Manually trigger form submission
                     disabled={isSubmitting}
-                    className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-                  >
+                    className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
+                    >
                     Submit
                   </button>
                   <button
                     type="button"
                     onClick={handlePrint}
                     className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
-                  >
+                    >
                     Print Bill
                   </button>
                 </div>

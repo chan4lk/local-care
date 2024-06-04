@@ -48,9 +48,10 @@ const ClearButton = () => {
   );
 };
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto mt-4">
       <Back />
-        <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2 text-center">New Patient</h1>
+      <h1 className="text-3xl font-bold mb-4 text-center hover:text-green-500 transition-colors duration-300">
+New Patient</h1>
       <Formik
         initialValues={{
           fullname: "",
