@@ -35,7 +35,7 @@ export interface ITransaction {
     name?:string;
     mobile?:string;
     paymentMethod: PaymentMethod;
-    timestamp: string; // Add the 'timestamp' property
+    createdAt?: string; // Add the 'timestamp' property
 
 
 }

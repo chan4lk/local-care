@@ -105,6 +105,7 @@ export default class Database {
                 'transaction.description AS description',
                 'transaction.status AS status',
                 'transaction.amount AS amount',
+                'transaction.paymentMethod AS paymentMethod',
                 'patient.fullname AS name', // alias fullname as name
                 'patient.mobile AS mobile', // alias mobile as mobile
             ])
