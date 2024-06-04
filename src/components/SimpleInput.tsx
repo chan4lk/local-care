@@ -2,11 +2,12 @@ import { ErrorMessage } from "formik"
 import React from "react";
 
 interface SimpleInputProps {
-    handleBlur: any;
-    handleChange: any;
-    values: any;
-    field: string;
-    label: string;
+  handleBlur: { (e: React.FocusEvent<any>): void; <T = any>(fieldOrEvent: T): T extends string ? (e: any) => void : void; };
+  handleChange: { (e: React.ChangeEvent<any>): void; <T = string | React.ChangeEvent<any>>(field: T): T extends React.ChangeEvent<any> ? void : (e: string | React.ChangeEvent<any>) => void; };
+  values: any;
+  label: string;
+  field: string;
+  disabled?: boolean; // Add disabled prop
 }
 
 export const SimpleInput: React.FC<SimpleInputProps> = ({label, handleBlur, handleChange, values, field}) => {

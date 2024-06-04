@@ -1,31 +1,25 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Formik, useFormikContext } from "formik"; // Import useFormikContext
+import { Formik, useFormikContext } from "formik";
 import { useReactToPrint, ReactToPrintProps } from "react-to-print";
 import { SimpleInput } from "../components/SimpleInput";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-api";
 import BillFormat from './BillFormat';
-import DailySummary from './DailySummary'; // Import DailySummary component
-
-
 interface FormValues {
   fullname: string;
   mobile: string;
   treatment: string;
   total_amount: string;
   paid_amount: string;
-  payment_type: string; // Add payment_type field
-  previous_paid?: string; // Make previous_paid optional
+  payment_type: string;
+  previous_paid?: string;
 }
-
 export const NewPatient = () => {
   const printRef = useRef(null);
   const [patientData, setPatientData] = useState(null);
-  const [patients, setPatients] = useState<IPatient[]>([]); // State to store all patients
-  
-
-  
+  const [patients, setPatients] = useState<IPatient[]>([]);
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
@@ -34,7 +28,6 @@ export const NewPatient = () => {
  const clearForm = () => {
   setPatientData(null); // Clear patient data
 };
-
 // ClearButton component to be placed outside of Formik
 const ClearButton = () => {
   const { resetForm } = useFormikContext(); // Get resetForm function from Formik context
@@ -48,18 +41,16 @@ const ClearButton = () => {
     <button
       type="button"
       onClick={handleClick}
-      className="ml-4 px-4 py-2 bg-red-100 text-black font-bold rounded-md hover:bg-red-300 focus:outline-none focus:bg-red-400"
-    >
+      className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
+      >
       Clear
     </button>
   );
 };
   return (
     <div className="container mx-auto">
-      <div className="flex items-center ">
-        <Back />
-        <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2">New Patient</h1>
-      </div>
+      <Back />
+        <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2 text-center">New Patient</h1>
       <Formik
         initialValues={{
           fullname: "",
@@ -72,6 +63,7 @@ const ClearButton = () => {
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
+          
           const pendingAmount =
             parseFloat(values.total_amount || "0") -
             parseFloat(values.paid_amount || "0");
@@ -120,16 +112,18 @@ const ClearButton = () => {
           });
           
         }}
-        
       >
+
         {({ handleSubmit, isSubmitting, values, handleChange, handleBlur }) => (
           <form onSubmit={handleSubmit} className="space-y-6">
+            
             <SimpleInput
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
               label="Full Name"
               field="fullname"
+              
             />
             <SimpleInput
               handleBlur={handleBlur}
@@ -176,8 +170,8 @@ const ClearButton = () => {
                 onBlur={handleBlur}
                 className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
               >
-                <option value="Cash">cash</option>
-                <option value="Card">card</option>
+                <option value="cash">cash</option>
+                <option value="card">card</option>
               </select>
             </div>
 
@@ -206,7 +200,7 @@ const ClearButton = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+                className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
                 >
                 Submit
               </button>
@@ -231,8 +225,6 @@ const ClearButton = () => {
           </form>
         )}
       </Formik>
-{/* Render DailySummary component */}
-<DailySummary patients={patients} />
       {/* Render the BillFormat component after form submission */}
       {patientData && (
         <div className="hidden">

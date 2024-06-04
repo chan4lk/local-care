@@ -24,7 +24,7 @@ export default class Transaction extends Auditable {
     @Column({
         type: "simple-enum",
         enum: PaymentMethod,
-        default: PaymentMethod.Cash,
+        default: PaymentMethod.cash,
     })
     paymentMethod: PaymentMethod
     

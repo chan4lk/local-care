@@ -22,8 +22,8 @@ export enum ITransactionStatus {
     Paid = "paid",
 }
 export enum PaymentMethod {
-    Cash = "cash",
-    Card = "card",
+    cash = "cash",
+    card = "card",
     None = "none"
 
 }
@@ -35,7 +35,7 @@ export interface ITransaction {
     name?:string;
     mobile?:string;
     paymentMethod: PaymentMethod;
-    timestamp: string; // Add the 'timestamp' property
+    createdAt?: string; // Add the 'timestamp' property
 
 
 }

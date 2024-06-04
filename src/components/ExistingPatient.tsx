@@ -67,13 +67,13 @@ export const ExistingPatient = () => {
                 transactions: [
                   ...patient.invoice.transactions.filter((t) => t.status === ITransactionStatus.Paid),
                   {
+                    id: patient.invoice.transactions.find((t) => t.status === ITransactionStatus.Pending)?.id,
                     status: ITransactionStatus.Pending,
                     amount: pendingAmount,
                     description: 'Pending Payment',
                     paymentMethod: PaymentMethod.None
                   },
                   {
-                    id: patient.invoice.transactions.find((t) => t.status === ITransactionStatus.Pending)?.id,
                     status: ITransactionStatus.Paid,
                     amount: parseFloat(values.paid_amount || '0'),
                     description: 'Paid Amount',
@@ -147,8 +147,8 @@ export const ExistingPatient = () => {
                 onBlur={handleBlur}
                 className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
               >
-                <option value="Cash">cash</option>
-                <option value="Card">card</option>
+                <option value="cash">cash</option>
+                <option value="card">card</option>
               </select>
             </div>
                 <div className="flex items-center justify-between">

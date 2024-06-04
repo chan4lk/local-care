@@ -1,32 +1,47 @@
-import React, { useState, useRef,useEffect } from "react";
-import DailySummary from "./DailySummary"; // Ensure DailySummary is imported
-import MonthlySummary from "./MonthlySummary";
-import { IPatient } from '../types/electron-api';
+import React, { useState, useRef, useEffect } from "react";
+import DaySummary from "./DaySummary"; 
+import MonthSummary from "./MonthSummary"; 
+import { ITransaction } from "../types/electron-api";
 import { useReactToPrint } from "react-to-print";
 import { Back } from "./BackButton";
 
 const ReportPage = () => {
-  const [patients, setPatients] = useState<IPatient[]>([]);
-  const [showDailySummary, setShowDailySummary] = useState(false);
-  const [showMonthlySummary, setShowMonthlySummary] = useState(false);
-  const dailySummaryRef = useRef<any>(null);
-  const monthlySummaryRef = useRef<any>(null);
+  const [summaryType, setSummaryType] = useState("daily");
+  const [transactions, setTransactions] = useState<Array<ITransaction>>([]);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const summaryRef = useRef<any>(null);
 
-  const handleToggleDailySummary = () => {
-    setShowDailySummary((prevState) => !prevState);
-  };
+  useEffect(() => {
+    const fetchTransactions = async (start: Date, end: Date) => {
+      const data = await window.electronAPI.fetchPaidByDateRange({ start, end });
+      setTransactions(data);
+    };
 
-  const handleToggleMonthlySummary = () => {
-    setShowMonthlySummary((prevState) => !prevState);
-  };
+    if (summaryType === "daily") {
+      const today = new Date();
+      fetchTransactions(today, today);
+    } else if (summaryType === "monthly") {
+      const startOfMonth = new Date(selectedYear, selectedMonth, 1);
+      const endOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
+      fetchTransactions(startOfMonth, endOfMonth);
+    } else if (summaryType === "custom") {
+      fetchTransactions(startDate, endDate);
+    } else if (summaryType === "all") {
+      const start = new Date(0); 
+      const end = new Date();
+      fetchTransactions(start, end);
+    }
 
-  const handlePrintDailySummary = useReactToPrint({
-    content: () => dailySummaryRef.current,
-    trigger: () => <button style={{ display: "none" }}>Print</button>,
-  });
+    return () => {
+      setTransactions([]);
+    };
+  }, [summaryType, startDate, endDate, selectedYear, selectedMonth]);
 
-  const handlePrintMonthlySummary = useReactToPrint({
-    content: () => monthlySummaryRef.current,
+  const handlePrintSummary = useReactToPrint({
+    content: () => summaryRef.current,
     trigger: () => <button style={{ display: "none" }}>Print</button>,
   });
 
@@ -34,59 +49,99 @@ const ReportPage = () => {
     <div className="container mx-auto mt-8">
       <div className="flex items-center">
         <Back />
-        <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2"></h1>
-      </div>
-      
-      <div className="flex justify-center">
-        <button
-          onClick={handleToggleDailySummary}
-          className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-        >
-          {showDailySummary ? "Hide Daily Summary" : "Show Daily Summary"}
-        </button>
-        <button
-          onClick={handleToggleMonthlySummary}
-          className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400 ml-4"
-        >
-          {showMonthlySummary ? "Hide Monthly Summary" : "Show Monthly Summary"}
-        </button>
       </div>
 
-      {showDailySummary && (
-        <div className="flex flex-wrap justify-center mt-8" ref={dailySummaryRef}>
-          <div className="w-full mt-4">
-            {/* Render DailySummary component */}
-            <DailySummary patients={patients} />
-          </div>
+<div className="flex justify-center mb-4">
+        <select
+          value={summaryType}
+          onChange={(e) => setSummaryType(e.target.value)}
+          className="px-4 py-2 bg-blue-300 text-black font-bold rounded-md hover:bg-blue-100 focus:outline-none focus:bg-blue-200 text-center"
+        >
+          <option value="all">All Summaries</option>
+          <option value="daily">Day Summary</option>
+          <option value="monthly">Month Summary</option>
+          <option value="custom">Custom Date Range</option>
+        </select>
+      </div>      {summaryType === "custom" && (
+        <div className="flex justify-center mb-4">
+          <input
+            type="date"
+            value={startDate.toISOString().substr(0, 10)}
+            onChange={(e) => setStartDate(new Date(e.target.value))}
+            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400 mr-4"
+          />
+          <input
+            type="date"
+            value={endDate.toISOString().substr(0, 10)}
+            onChange={(e) => setEndDate(new Date(e.target.value))}
+            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+          />
         </div>
       )}
-      {showMonthlySummary && (
-        <div className="flex flex-wrap justify-center mt-8" ref={monthlySummaryRef}>
-          <div className="w-full mt-4">
-            <MonthlySummary patients={patients} />
-          </div>
-        </div>
-      )}
-      {showDailySummary && (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handlePrintDailySummary}
+
+      {summaryType === "monthly" && (
+        <div className="flex justify-center mb-4">
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400 mr-4"
+          >
+            {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
             className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
           >
-            Print Daily Summary
-          </button>
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i} value={i}>{new Date(0, i).toLocaleString('default', { month: 'long' })}</option>
+            ))}
+          </select>
         </div>
       )}
-      {showMonthlySummary && (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handlePrintMonthlySummary}
-            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-          >
-            Print Monthly Summary
-          </button>
-        </div>
+
+      {summaryType === "monthly" && (
+        <>
+          <div className="flex flex-wrap justify-center mt-8" ref={summaryRef}>
+            <div className="w-full mt-4">
+              <MonthSummary transactions={transactions} />
+            </div>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handlePrintSummary}
+              className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+            >
+              Print Summary
+            </button>
+          </div>
+        </>
       )}
+      {summaryType === "daily" && (
+        <>
+          <div className="flex flex-wrap justify-center mt-8" ref={summaryRef}>
+            <div className="w-full mt-4">
+              <DaySummary transactions={transactions} />
+            </div>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={handlePrintSummary}
+              className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+            >
+              Print Summary
+            </button>
+          </div>
+        </>
+      )}
+
+      
+      
+    
     </div>
   );
 };
