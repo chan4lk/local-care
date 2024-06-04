@@ -1,11 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,useEffect } from "react";
 import DailySummary from "./DailySummary"; // Ensure DailySummary is imported
 import MonthlySummary from "./MonthlySummary";
 import { IPatient } from '../types/electron-api';
 import { useReactToPrint } from "react-to-print";
 import { Back } from "./BackButton";
 
-const ReportPage = ({ patients }: { patients: IPatient[] }) => {
+const ReportPage = () => {
+  const [patients, setPatients] = useState<IPatient[]>([]);
   const [showDailySummary, setShowDailySummary] = useState(false);
   const [showMonthlySummary, setShowMonthlySummary] = useState(false);
   const dailySummaryRef = useRef<any>(null);
