@@ -1,11 +1,13 @@
-import React, { useRef, useState } from "react";
-import { Formik } from "formik";
-import { useReactToPrint } from "react-to-print";
+import React, { useRef, useState, useEffect } from "react";
+import { Formik, useFormikContext } from "formik"; // Import useFormikContext
+import { useReactToPrint, ReactToPrintProps } from "react-to-print";
 import { SimpleInput } from "../components/SimpleInput";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
-import { IPatient, ITransactionStatus } from "../types/electron-api";
+import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-api";
 import BillFormat from './BillFormat';
+import DailySummary from './DailySummary'; // Import DailySummary component
+
 
 interface FormValues {
   fullname: string;
@@ -19,24 +21,39 @@ interface FormValues {
 
 export const NewPatient = () => {
   const printRef = useRef(null);
-  const summaryPrintRef = useRef(null); // Reference for daily summary print
   const [patientData, setPatientData] = useState(null);
-  const [patients, setPatients] = useState([]); // State to store all patients
-  const [shouldPrint, setShouldPrint] = useState(false); // State to track print action
+  const [patients, setPatients] = useState<IPatient[]>([]); // State to store all patients
+  
+
+  
 
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    trigger: () => <button ref={printButtonRef}>Print Bill</button>, // Pass React element
-  });
+  } as ReactToPrintProps);
+ // Defined clearForm function
+ const clearForm = () => {
+  setPatientData(null); // Clear patient data
+};
 
-  const handleSummaryPrint = useReactToPrint({
-    content: () => summaryPrintRef.current,
-    trigger: () => <button ref={summaryPrintButtonRef}>Print Daily Summary</button>, // Pass React element
-  });
+// ClearButton component to be placed outside of Formik
+const ClearButton = () => {
+  const { resetForm } = useFormikContext(); // Get resetForm function from Formik context
 
-  const printButtonRef = useRef<HTMLButtonElement>(null); // Ref for print button
-  const summaryPrintButtonRef = useRef<HTMLButtonElement>(null); // Ref for summary print button
+  const handleClick = () => {
+    resetForm(); // Reset form values
+    clearForm(); // Clear patient data
+  };
 
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className="ml-4 px-4 py-2 bg-red-100 text-black font-bold rounded-md hover:bg-red-300 focus:outline-none focus:bg-red-400"
+    >
+      Clear
+    </button>
+  );
+};
   return (
     <div className="container mx-auto">
       <div className="flex items-center ">
@@ -50,8 +67,8 @@ export const NewPatient = () => {
           treatment: "",
           total_amount: "",
           paid_amount: "",
-          payment_type: "Cash", // Default to Cash
-          previous_paid: "", // Add previous_paid here
+          payment_type: "cash", 
+          previous_paid: "", 
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
@@ -70,11 +87,14 @@ export const NewPatient = () => {
                   status: ITransactionStatus.Pending,
                   amount: pendingAmount,
                   description: "Pending Payment",
+                  paymentMethod: PaymentMethod.None
                 },
                 {
                   status: ITransactionStatus.Paid,
                   amount: parseFloat(values.paid_amount || "0"),
                   description: `Paid Amount (${values.payment_type})`,
+                  paymentMethod: values.payment_type,
+
                 },
               ],
             },
@@ -87,20 +107,20 @@ export const NewPatient = () => {
           const allPatients = await window.electronAPI.fetchAll();
           console.table(allPatients);
           setPatients(allPatients); // Update the patients state with all patients
-          resetForm();
 
           // Set the patient data after submission
           setPatientData({
             patient: {
               fullname: values.fullname,
               mobile: values.mobile,
-              patientRegistrationId: '12345', // Example ID
-              referenceNumber: 'BILL123', // Example bill number
+              patientRegistrationId: '', // Example ID
+              referenceNumber: '', // Example bill number
             },
             values,
           });
-          setShouldPrint(true); // Set state to trigger print action
+          
         }}
+        
       >
         {({ handleSubmit, isSubmitting, values, handleChange, handleBlur }) => (
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -142,24 +162,24 @@ export const NewPatient = () => {
               />
             </div>
             <div className="flex flex-col">
-  <label
-    htmlFor="payment_type"
-    className="block text-sm font-medium text-gray-700 mb-2"
-  >
-    Payment Type
-  </label>
-  <select
-    id="payment_type"
-    name="payment_type"
-    value={values.payment_type}
-    onChange={handleChange}
-    onBlur={handleBlur}
-    className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
-  >
-    <option value="Cash">Cash</option>
-    <option value="Card">Card</option>
-  </select>
-</div>
+              <label
+                htmlFor="payment_type"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Payment Type
+              </label>
+              <select
+                id="payment_type"
+                name="payment_type"
+                value={values.payment_type}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
+              >
+                <option value="Cash">cash</option>
+                <option value="Card">card</option>
+              </select>
+            </div>
 
             <div className="flex items-center justify-between">
               <div></div>
@@ -182,41 +202,51 @@ export const NewPatient = () => {
                 </span>
               </div>
             </div>
-            <div className="flex justify-center">
+            <div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+                >
+                Submit
+              </button>
+              {/* Render the print button when patientData is available */}
+      {patientData && (
+        <button
+  id="print-bill-button" // Add id for the print button
+  onClick={() => {
+    handlePrint(); // Trigger printing
+  }}
+  className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
+>
+  Print Bill
+</button>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-              >
-              Submit
-            </button>
-            </div>
+
+      )}
+     {/* Render Clear button */}
+     <ClearButton />
+              </div>
+              
           </form>
         )}
       </Formik>
-      {/* Render the BillFormat component after form submission and when shouldPrint is true */}
-      {patientData && shouldPrint && (
-        <BillFormat
-          ref={printRef}
-          patient={patientData.patient}
-          values={patientData.values}
-        />
-      )}
-      {/* Render the print button when patientData is available */}
+{/* Render DailySummary component */}
+<DailySummary patients={patients} />
+      {/* Render the BillFormat component after form submission */}
       {patientData && (
-        <div className="flex justify-center mt-56">
-          <button
-            id="print-bill-button" // Add id for the print button
-            ref={printButtonRef} // Attach ref to the print button
-            onClick={handlePrint}
-            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-            >
-            Print Bill
-          </button>
+        <div className="hidden">
+          <BillFormat
+            ref={printRef}
+            patient={patientData.patient}
+            values={patientData.values}
+          />
         </div>
       )}
 
+      
     </div>
   );
 };
+
+export default NewPatient;

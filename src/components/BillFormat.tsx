@@ -24,35 +24,40 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
     return (
       <div ref={ref} className="p-4" style={{ width: '12cm', height: '10.1cm' }}>
         <div className="border-dashed border-2 border-gray-200 p-4">
-          <div className="flex justify-between pb-2 border-b border-dashed">
-            <div>
-              <p className="font-bold">BILL NO</p>
-              <p>{patient.referenceNumber}</p>
+          <div className="">
+            <div className="flex">
+              <p className="font-bold w-2/5">BILL NO</p>
+              <p className="w-3/5">: {patient.referenceNumber}</p>
             </div>
-            <div>
-              <p className="font-bold">BILL DATE</p>
-              <p>{new Date().toLocaleString()}</p>
+            <div className="flex">
+              <p className="font-bold w-2/5">BILL DATE</p>
+              <p className="w-3/5">: {new Date().toLocaleString()}</p>
             </div>
-          </div>
-
-          <div className="pt-2 pb-2 border-b border-dashed">
-            <p className="font-bold">PATIENT</p>
-            <p>{patient.fullname}</p>
-          </div>
-
-          <div className="pt-2 pb-2 border-b border-dashed">
-            <p className="font-bold">PATIENT ID</p>
-            <p>{patient.patientRegistrationId}</p>
-          </div>
-
-          <div className="pt-2 pb-2 border-b border-dashed">
-            <p className="font-bold">MOBILE</p>
-            <p>{patient.mobile}</p>
-          </div>
-
-          <div className="pt-2 pb-2 border-b border-dashed">
-            <p className="font-bold">TREATMENT</p>
-            <p>{values.treatment}</p>
+            <div className="flex">
+              <p className="font-bold w-2/5">PATIENT</p>
+              <p className="w-3/5">: {patient.fullname}</p>
+            </div>
+            <div className="flex">
+              <p className="font-bold w-2/5">PATIENT ID</p>
+              <p className="w-3/5">: {patient.patientRegistrationId || ''}</p>
+            </div>
+            <div className="flex">
+              <p className="font-bold w-2/5">APPOINTMENT NO</p>
+              <p className="w-3/5">: {''}</p>
+            </div>
+            <div className="flex justify-between">
+              <div className="flex">
+                <p className="font-bold ">GENDER</p>
+              </div>
+              <div className="w-1/6 mr-2"> {/* Adjust the width and add margin */}
+                <p className="font-bold">AGE :</p>
+              </div>
+            </div>
+            
+            <div className="flex">
+              <p className="font-bold w-2/5">TELL NO</p>
+              <p className="w-3/5">: {patient.mobile}</p>
+            </div>
           </div>
 
           <table className="w-full mt-4 border-collapse">
@@ -76,38 +81,24 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
 
           <div className="mt-4">
             <div className="flex justify-between">
-              <p className="font-bold">TOTAL</p>
-              <p>
-                {formatNumberWithCommas(
-                  parseFloat(values.total_amount || '0')
-                )}
-              </p>
+              <p className="font-bold ml-auto ">TOTAL (LKR)</p>
+              <p className="ml-4">{formatNumberWithCommas(parseFloat(values.total_amount || '0'))}</p>
             </div>
             <div className="flex justify-between">
-              <p className="font-bold">PREVIOUS PAYMENTS</p>
-              <p>
-                {formatNumberWithCommas(
-                  parseFloat(values.previous_paid || '0')
-                )}
-              </p>
+              <p className="font-bold ml-auto ">PREVIOUS PAYMENTS (LKR)</p>
+              <p className="ml-4">{formatNumberWithCommas(parseFloat(values.previous_paid || '0'))}</p>
             </div>
             <div className="flex justify-between">
-              <p className="font-bold">PAID AMOUNT</p>
-              <p>
-                {formatNumberWithCommas(
-                  parseFloat(values.paid_amount || '0')
-                )}
-              </p>
+              <p className="font-bold ml-auto ">PAID AMOUNT (LKR)</p>
+              <p className="ml-4">{formatNumberWithCommas(parseFloat(values.paid_amount || '0'))}</p>
             </div>
             <div className="flex justify-between">
-              <p className="font-bold">AMOUNT DUE</p>
-              <p>
-                {formatNumberWithCommas(
-                  parseFloat(values.total_amount || '0') -
-                    parseFloat(values.previous_paid || '0') -
-                    parseFloat(values.paid_amount || '0')
-                )}
-              </p>
+              <p className="font-bold ml-auto ">DUE AMOUNT (LKR)</p>
+              <p className="ml-4">{formatNumberWithCommas(
+                parseFloat(values.total_amount || '0') -
+                parseFloat(values.previous_paid || '0') -
+                parseFloat(values.paid_amount || '0')
+              )}</p>
             </div>
           </div>
         </div>

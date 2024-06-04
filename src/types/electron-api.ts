@@ -5,7 +5,8 @@ export interface IPatient {
     treatment: string;
     invoice: IInvoice;
     createdAt?: Date;
-    patientRegistrationId: string; // Add this line
+    patientRegistrationId: string; 
+
 
 }
 export interface IInvoice{
@@ -13,13 +14,19 @@ export interface IInvoice{
     description?: string;
     total: number;
     transactions: ITransaction[];
+
 }
 
 export enum ITransactionStatus {
     Pending = "pending",
     Paid = "paid",
 }
+export enum PaymentMethod {
+    Cash = "cash",
+    Card = "card",
+    None = "none"
 
+}
 export interface ITransaction {
     id?: number;
     description?: string;
@@ -27,6 +34,10 @@ export interface ITransaction {
     status: ITransactionStatus;
     name?:string;
     mobile?:string;
+    paymentMethod: PaymentMethod;
+    timestamp: string; // Add the 'timestamp' property
+
+
 }
 
 export interface ElectronAPI {
