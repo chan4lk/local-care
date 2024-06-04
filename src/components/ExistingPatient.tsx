@@ -25,7 +25,7 @@ export const ExistingPatient = () => {
     content: () => printRef.current,
     trigger: () => <button style={{ display: 'none' }}>Print Trigger</button>, // Hidden button to satisfy the type requirement
   });
-
+ 
   return (
     <div className="container mx-auto mt-4">
         <Back />
@@ -82,6 +82,8 @@ Existing Patient</h1>
               },
             } as IPatient;
             const insert = await window.electronAPI.insertPatient(patientDetails);
+            // Show alert after form submission
+ window.alert("Bill submitted successfully!");
             
           }}
         >
@@ -189,6 +191,7 @@ Existing Patient</h1>
                     >
                     Submit
                   </button>
+                  
                   <button
                     type="button"
                     onClick={handlePrint}

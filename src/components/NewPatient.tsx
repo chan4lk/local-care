@@ -111,7 +111,8 @@ New Patient</h1>
             },
             values,
           });
-          
+          // Show alert after form submission
+    window.alert("Bill submitted successfully!");
         }}
       >
 
