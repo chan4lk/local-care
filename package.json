@@ -1,8 +1,8 @@
 {
   "name": "local-care",
   "productName": "local-care",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "1.1.4",
+  "description": "Local care",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -20,14 +20,20 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron-forge/plugin-vite": "^7.4.0",
+    "@electron-forge/publisher-github": "^7.4.0",
     "@electron/fuses": "^1.8.0",
+    "@swc/core": "^1.5.5",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "autoprefixer": "^10.4.19",
     "electron": "30.0.3",
+    "electron-vite": "^2.2.0",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
     "ts-node": "^10.9.2",
     "typescript": "~4.5.4",
     "vite": "^5.2.11"
@@ -39,10 +45,17 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.5.2",
     "electron-squirrel-startup": "^1.0.0",
+    "formik": "^2.4.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "rxdb": "^15.19.0",
-    "rxjs": "^7.8.1"
+    "react-router-dom": "^6.23.1",
+    "react-to-print": "^2.15.1",
+    "react-toastify": "^10.0.5",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.20",
+    "yup": "^1.4.0"
   }
 }
