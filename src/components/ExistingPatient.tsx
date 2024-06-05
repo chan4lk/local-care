@@ -7,6 +7,9 @@ import { Back } from './BackButton';
 import { Search } from './Search';
 import { IPatient, ITransactionStatus, PaymentMethod } from '../types/electron-api';
 import BillFormat from './BillFormat'; 
+import { toast, ToastContainer } from "react-toastify"; // Import toast and ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
+
 interface FormValues {
   fullname: string;
   mobile: string;
@@ -20,17 +23,18 @@ interface FormValues {
 export const ExistingPatient = () => {
   const [patient, setPatient] = useState<IPatient | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
-
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
     trigger: () => <button style={{ display: 'none' }}>Print Trigger</button>, // Hidden button to satisfy the type requirement
   });
- 
+
   return (
     <div className="container mx-auto mt-4">
-        <Back />
-        <h1 className="text-3xl font-bold mb-4 text-center hover:text-green-500 transition-colors duration-300">
-Existing Patient</h1>
+      <Back />
+      <h1 className="text-3xl font-bold mb-4 text-center hover:text-green-500 transition-colors duration-300">
+        Existing Patient
+      </h1>
       {patient == null ? (
         <Search setPatient={setPatient} />
       ) : (
@@ -82,9 +86,17 @@ Existing Patient</h1>
               },
             } as IPatient;
             const insert = await window.electronAPI.insertPatient(patientDetails);
-            // Show alert after form submission
- window.alert("Bill submitted successfully!");
-            
+
+            // Show toast notification after form submission
+            toast.success("Bill submitted successfully!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
           }}
         >
           {({
@@ -134,24 +146,24 @@ Existing Patient</h1>
                   />
                 </div>
                 <div className="flex flex-col">
-              <label
-                htmlFor="payment_type"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Payment Type
-              </label>
-              <select
-                id="payment_type"
-                name="payment_type"
-                value={values.payment_type}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
-              >
-                <option value="cash">cash</option>
-                <option value="card">card</option>
-              </select>
-            </div>
+                  <label
+                    htmlFor="payment_type"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Payment Type
+                  </label>
+                  <select
+                    id="payment_type"
+                    name="payment_type"
+                    value={values.payment_type}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
+                  >
+                    <option value="cash">cash</option>
+                    <option value="card">card</option>
+                  </select>
+                </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <label htmlFor="amount_due" className="block text-sm font-medium text-gray-700 mr-4">
@@ -182,21 +194,20 @@ Existing Patient</h1>
                     </span>
                   </div>
                 </div>
-                <div>
+                <div className="flex items-center justify-between">
                   <button
                     type="button"
                     onClick={() => handleSubmit()} // Manually trigger form submission
                     disabled={isSubmitting}
-                    className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
-                    >
+                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md  cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold mr-4" // Added margin-right
+                  >
                     Submit
                   </button>
-                  
                   <button
                     type="button"
                     onClick={handlePrint}
-                    className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
-                    >
+                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md  cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+                  >
                     Print Bill
                   </button>
                 </div>
@@ -208,6 +219,9 @@ Existing Patient</h1>
           )}
         </Formik>
       )}
+      <ToastContainer /> {/* Add ToastContainer to render toast notifications */}
     </div>
   );
 };
+
+export default ExistingPatient;

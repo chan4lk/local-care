@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { Formik, useFormikContext } from "formik";
 import { useReactToPrint, ReactToPrintProps } from "react-to-print";
 import { SimpleInput } from "../components/SimpleInput";
@@ -6,6 +6,9 @@ import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-api";
 import BillFormat from './BillFormat';
+import { toast, ToastContainer } from "react-toastify"; // Import toast and ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
+
 interface FormValues {
   fullname: string;
   mobile: string;
@@ -15,43 +18,45 @@ interface FormValues {
   payment_type: string;
   previous_paid?: string;
 }
+
 export const NewPatient = () => {
   const printRef = useRef(null);
   const [patientData, setPatientData] = useState(null);
   const [patients, setPatients] = useState<IPatient[]>([]);
   const [formSubmitted, setFormSubmitted] = useState(false);
-
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
   } as ReactToPrintProps);
- // Defined clearForm function
- const clearForm = () => {
-  setPatientData(null); // Clear patient data
-};
-// ClearButton component to be placed outside of Formik
-const ClearButton = () => {
-  const { resetForm } = useFormikContext(); // Get resetForm function from Formik context
 
-  const handleClick = () => {
-    resetForm(); // Reset form values
-    clearForm(); // Clear patient data
+  const clearForm = () => {
+    setPatientData(null);
   };
 
-  return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
+  const ClearButton = () => {
+    const { resetForm } = useFormikContext(); // Get resetForm function from Formik context
+
+    const handleClick = () => {
+      resetForm(); // Reset form values
+      clearForm(); // Clear patient data
+    };
+
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
       >
-      Clear
-    </button>
-  );
-};
+        Clear
+      </button>
+    );
+  };
+
   return (
     <div className="container mx-auto mt-4">
       <Back />
       <h1 className="text-3xl font-bold mb-4 text-center hover:text-green-500 transition-colors duration-300">
-New Patient</h1>
+        New Patient
+      </h1>
       <Formik
         initialValues={{
           fullname: "",
@@ -59,12 +64,31 @@ New Patient</h1>
           treatment: "",
           total_amount: "",
           paid_amount: "",
-          payment_type: "cash", 
-          previous_paid: "", 
+          payment_type: "cash",
+          previous_paid: "",
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
-          
+          // Check if the patient already exists
+          const duplicatePatient = patients.find(
+            (patient) =>
+              patient.fullname === values.fullname &&
+              patient.mobile === values.mobile
+          );
+
+          if (duplicatePatient) {
+            toast.error("Patient already submitted!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            return; // Exit the function if a duplicate is found
+          }
+
           const pendingAmount =
             parseFloat(values.total_amount || "0") -
             parseFloat(values.paid_amount || "0");
@@ -80,14 +104,13 @@ New Patient</h1>
                   status: ITransactionStatus.Pending,
                   amount: pendingAmount,
                   description: "Pending Payment",
-                  paymentMethod: PaymentMethod.None
+                  paymentMethod: PaymentMethod.None,
                 },
                 {
                   status: ITransactionStatus.Paid,
                   amount: parseFloat(values.paid_amount || "0"),
                   description: `Paid Amount (${values.payment_type})`,
                   paymentMethod: values.payment_type,
-
                 },
               ],
             },
@@ -106,26 +129,32 @@ New Patient</h1>
             patient: {
               fullname: values.fullname,
               mobile: values.mobile,
-              patientRegistrationId: '', // Example ID
-              referenceNumber: '', // Example bill number
+              patientRegistrationId: "", // Example ID
+              referenceNumber: "", // Example bill number
             },
             values,
           });
-          // Show alert after form submission
-    window.alert("Bill submitted successfully!");
+
+          // Show toast notification after form submission
+          toast.success("Bill submitted successfully!", {
+            position: "top-center", // Use a string for the position
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
         }}
       >
-
         {({ handleSubmit, isSubmitting, values, handleChange, handleBlur }) => (
           <form onSubmit={handleSubmit} className="space-y-6">
-            
             <SimpleInput
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
               label="Full Name"
               field="fullname"
-              
             />
             <SimpleInput
               handleBlur={handleBlur}
@@ -176,7 +205,6 @@ New Patient</h1>
                 <option value="card">card</option>
               </select>
             </div>
-
             <div className="flex items-center justify-between">
               <div></div>
               <div className="flex items-center">
@@ -194,51 +222,43 @@ New Patient</h1>
                   {(
                     parseFloat(values.total_amount || "0") -
                     parseFloat(values.paid_amount || "0")
-                  ).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
+                  ).toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })}
                 </span>
               </div>
             </div>
-            <div>
+            <div className="flex items-center justify-between space-x-4">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
-                >
+                className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+              >
                 Submit
               </button>
-              {/* Render the print button when patientData is available */}
-      {patientData && (
-        <button
-  id="print-bill-button" // Add id for the print button
-  onClick={() => {
-    handlePrint(); // Trigger printing
-  }}
-  className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
->
-  Print Bill
-</button>
-
-
-      )}
-     {/* Render Clear button */}
-     <ClearButton />
-              </div>
-              
+              {patientData && (
+                <button
+                  id="print-bill-button"
+                  onClick={() => {
+                    handlePrint();
+                  }}
+                  className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+                >
+                  Print Bill
+                </button>
+              )}
+              <ClearButton />
+            </div>
           </form>
         )}
       </Formik>
-      {/* Render the BillFormat component after form submission */}
       {patientData && (
         <div className="hidden">
-          <BillFormat
-            ref={printRef}
-            patient={patientData.patient}
-            values={patientData.values}
-          />
+          <BillFormat ref={printRef} patient={patientData.patient} values={patientData.values} />
         </div>
       )}
-
-      
+      <ToastContainer /> {/* Add ToastContainer to render toast notifications */}
     </div>
   );
 };
