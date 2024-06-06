@@ -1,10 +1,14 @@
 import React from "react";
-import { Root } from "./routes/Root";
 import { createHashRouter } from "react-router-dom";
+import { Root } from "./routes/Root";
 import NewPatient from "./routes/NewPatientContainer";
 import ExistingPatient from "./routes/ExistingPatientContainer";
+import ReportPageContainer from "./routes/ReportPageContainer";
+import { IPatient } from './types/electron-api'; // Import IPatient type if needed
 
-export const router = createHashRouter([
+const patients: IPatient[] = []; // Assuming patients data is available here
+
+const router = createHashRouter([
   {
     path: "/",
     element: <Root />,
@@ -17,4 +21,10 @@ export const router = createHashRouter([
     path: "/existing",
     element: <ExistingPatient />,
   },
+  {
+    path: "/report",
+    element: <ReportPageContainer patients={patients} />,
+  },
 ]);
+
+export default router; // Export the router variable

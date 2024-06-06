@@ -1,11 +1,13 @@
 import React, { useRef, useState } from "react";
-import { Formik } from "formik";
-import { useReactToPrint } from "react-to-print";
+import { Formik, useFormikContext } from "formik";
+import { useReactToPrint, ReactToPrintProps } from "react-to-print";
 import { SimpleInput } from "../components/SimpleInput";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
-import { IPatient, ITransactionStatus } from "../types/electron-api";
+import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-api";
 import BillFormat from './BillFormat';
+import { toast, ToastContainer } from "react-toastify"; // Import toast and ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
 
 interface FormValues {
   fullname: string;
@@ -13,36 +15,50 @@ interface FormValues {
   treatment: string;
   total_amount: string;
   paid_amount: string;
-  payment_type: string; // Add payment_type field
-  previous_paid?: string; // Make previous_paid optional
+  payment_type: string;
+  previous_paid?: string;
 }
 
 export const NewPatient = () => {
   const printRef = useRef(null);
-  const summaryPrintRef = useRef(null); // Reference for daily summary print
   const [patientData, setPatientData] = useState(null);
-  const [patients, setPatients] = useState([]); // State to store all patients
-  const [shouldPrint, setShouldPrint] = useState(false); // State to track print action
-
+  const [patients, setPatients] = useState<IPatient[]>([]);
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    trigger: () => <button ref={printButtonRef}>Print Bill</button>, // Pass React element
-  });
+  } as ReactToPrintProps);
 
-  const handleSummaryPrint = useReactToPrint({
-    content: () => summaryPrintRef.current,
-    trigger: () => <button ref={summaryPrintButtonRef}>Print Daily Summary</button>, // Pass React element
-  });
+  const clearForm = () => {
+    setPatientData(null);
+  };
 
-  const printButtonRef = useRef<HTMLButtonElement>(null); // Ref for print button
-  const summaryPrintButtonRef = useRef<HTMLButtonElement>(null); // Ref for summary print button
+  const ClearButton = () => {
+    const { resetForm } = useFormikContext(); // Get resetForm function from Formik context
+
+    const handleClick = () => {
+      resetForm(); // Reset form values
+      clearForm(); // Clear patient data
+    };
+
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+      >
+        Clear
+      </button>
+    );
+  };
 
   return (
-    <div className="container mx-auto">
-      <div className="flex items-center ">
-        <Back />
-        <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2">New Patient</h1>
+    <div className="container mx-auto mt-4">
+      <Back />
+      <div className="flex flex-wrap justify-center text-center">
+      <div className="w-1/2 p-4 bg-white-100 rounded-lg hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-400 mb-8">
+          <h2 className="text-lg font-bold">New Patient</h2>
+        </div>
       </div>
+      
       <Formik
         initialValues={{
           fullname: "",
@@ -50,11 +66,31 @@ export const NewPatient = () => {
           treatment: "",
           total_amount: "",
           paid_amount: "",
-          payment_type: "Cash", // Default to Cash
-          previous_paid: "", // Add previous_paid here
+          payment_type: "cash",
+          previous_paid: "",
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
+          // Check if the patient already exists
+          const duplicatePatient = patients.find(
+            (patient) =>
+              patient.fullname === values.fullname &&
+              patient.mobile === values.mobile
+          );
+
+          if (duplicatePatient) {
+            toast.error("Patient already submitted!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            return; // Exit the function if a duplicate is found
+          }
+
           const pendingAmount =
             parseFloat(values.total_amount || "0") -
             parseFloat(values.paid_amount || "0");
@@ -70,15 +106,18 @@ export const NewPatient = () => {
                   status: ITransactionStatus.Pending,
                   amount: pendingAmount,
                   description: "Pending Payment",
+                  paymentMethod: PaymentMethod.None,
                 },
                 {
                   status: ITransactionStatus.Paid,
                   amount: parseFloat(values.paid_amount || "0"),
                   description: `Paid Amount (${values.payment_type})`,
+                  paymentMethod: values.payment_type,
                 },
               ],
             },
           } as IPatient;
+          patient.invoice.transactions = patient.invoice.transactions.filter(t => !(t.amount == 0 && t.status == ITransactionStatus.Paid))
           const insert = await window.electronAPI.insertPatient(patient);
 
           console.log("Insert: ");
@@ -87,19 +126,28 @@ export const NewPatient = () => {
           const allPatients = await window.electronAPI.fetchAll();
           console.table(allPatients);
           setPatients(allPatients); // Update the patients state with all patients
-          resetForm();
 
           // Set the patient data after submission
           setPatientData({
             patient: {
               fullname: values.fullname,
               mobile: values.mobile,
-              patientRegistrationId: '12345', // Example ID
-              referenceNumber: 'BILL123', // Example bill number
+              patientRegistrationId: "", // Example ID
+              referenceNumber: "", // Example bill number
             },
             values,
           });
-          setShouldPrint(true); // Set state to trigger print action
+
+          // Show toast notification after form submission
+          toast.success("Bill submitted successfully!", {
+            position: "top-center", // Use a string for the position
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
         }}
       >
         {({ handleSubmit, isSubmitting, values, handleChange, handleBlur }) => (
@@ -142,25 +190,24 @@ export const NewPatient = () => {
               />
             </div>
             <div className="flex flex-col">
-  <label
-    htmlFor="payment_type"
-    className="block text-sm font-medium text-gray-700 mb-2"
-  >
-    Payment Type
-  </label>
-  <select
-    id="payment_type"
-    name="payment_type"
-    value={values.payment_type}
-    onChange={handleChange}
-    onBlur={handleBlur}
-    className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
-  >
-    <option value="Cash">Cash</option>
-    <option value="Card">Card</option>
-  </select>
-</div>
-
+              <label
+                htmlFor="payment_type"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Payment Type
+              </label>
+              <select
+                id="payment_type"
+                name="payment_type"
+                value={values.payment_type}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
+              >
+                <option value="cash">cash</option>
+                <option value="card">card</option>
+              </select>
+            </div>
             <div className="flex items-center justify-between">
               <div></div>
               <div className="flex items-center">
@@ -178,45 +225,45 @@ export const NewPatient = () => {
                   {(
                     parseFloat(values.total_amount || "0") -
                     parseFloat(values.paid_amount || "0")
-                  ).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
+                  ).toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })}
                 </span>
               </div>
             </div>
-            <div className="flex justify-center">
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+            <div className="flex items-center justify-between space-x-4">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
               >
-              Submit
-            </button>
+                Submit
+              </button>
+              {patientData && (
+                <button
+                  id="print-bill-button"
+                  onClick={() => {
+                    handlePrint();
+                  }}
+                  className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+                >
+                  Print Bill
+                </button>
+              )}
+              <ClearButton />
             </div>
           </form>
         )}
       </Formik>
-      {/* Render the BillFormat component after form submission and when shouldPrint is true */}
-      {patientData && shouldPrint && (
-        <BillFormat
-          ref={printRef}
-          patient={patientData.patient}
-          values={patientData.values}
-        />
-      )}
-      {/* Render the print button when patientData is available */}
       {patientData && (
-        <div className="flex justify-center mt-56">
-          <button
-            id="print-bill-button" // Add id for the print button
-            ref={printButtonRef} // Attach ref to the print button
-            onClick={handlePrint}
-            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-            >
-            Print Bill
-          </button>
+        <div className="hidden">
+          <BillFormat ref={printRef} patient={patientData.patient} values={patientData.values} />
         </div>
       )}
-
-    </div>
+      <ToastContainer /> {/* Add ToastContainer to render toast notifications */}
+      </div>
   );
 };
+
+export default NewPatient;

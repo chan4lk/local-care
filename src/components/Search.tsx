@@ -21,7 +21,7 @@ export const Search = ({ setPatient }: { setPatient: React.Dispatch<any> }) => {
           <input
             type="text"
             className="w-full p-2 pl-8 rounded border border-gray-200 bg-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent"
-            placeholder="search..."
+            placeholder="Search..."
             value={keyword}
             onChange={handleInput}
           />
