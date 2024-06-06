@@ -12,12 +12,12 @@ export const Dashboard = () => {
 
   return (
     <div className="container mx-auto">
-      <div className="flex flex-wrap justify-center mt-4">
-      <h1 className="text-3xl font-bold mb-4 text-center hover:text-green-500 transition-colors duration-300">
-  Rosewood Dental & Medical Hospital
-</h1>
+      <div className="flex flex-wrap justify-center text-center">
+                <div className="w-3/4 p-4 bg-white-100 rounded-lg  hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-900 mb-8">
+                    <h1 className="text-4xl font-bold"> Rosewood Dental & Medical Hospital</h1>
+                </div>
+            </div>
 
-      </div>
       <div className="flex flex-wrap justify-center text-center">
         <div
           className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md  cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800"
@@ -38,6 +38,8 @@ export const Dashboard = () => {
           onClick={handleViewReport}
         >
           <h2 className="text-lg font-bold">View Reports</h2>
+          <p className="text-sm">Daily & Monthly Summaries</p>
+
         </div>
       </div>
     </div>

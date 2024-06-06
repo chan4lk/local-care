@@ -6,8 +6,9 @@ import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-api";
 import BillFormat from './BillFormat';
-import { toast, ToastContainer } from "react-toastify"; // Import toast and ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Invoice from '../database/models/Invoice'; // Import the Invoice class
 
 interface FormValues {
   fullname: string;
@@ -33,11 +34,11 @@ export const NewPatient = () => {
   };
 
   const ClearButton = () => {
-    const { resetForm } = useFormikContext(); // Get resetForm function from Formik context
+    const { resetForm } = useFormikContext();
 
     const handleClick = () => {
-      resetForm(); // Reset form values
-      clearForm(); // Clear patient data
+      resetForm();
+      clearForm();
     };
 
     return (
@@ -54,9 +55,12 @@ export const NewPatient = () => {
   return (
     <div className="container mx-auto mt-4">
       <Back />
-      <h1 className="text-3xl font-bold mb-4 text-center hover:text-green-500 transition-colors duration-300">
-        New Patient
-      </h1>
+      <div className="flex flex-wrap justify-center text-center">
+        <div className="w-1/2 p-4 bg-gray-100 rounded-lg shadow-md hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 mb-8">
+          <h2 className="text-lg font-bold">New Patient</h2>
+        </div>
+      </div>
+      
       <Formik
         initialValues={{
           fullname: "",
@@ -69,7 +73,6 @@ export const NewPatient = () => {
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
-          // Check if the patient already exists
           const duplicatePatient = patients.find(
             (patient) =>
               patient.fullname === values.fullname &&
@@ -86,19 +89,24 @@ export const NewPatient = () => {
               draggable: true,
               progress: undefined,
             });
-            return; // Exit the function if a duplicate is found
+            return;
           }
 
           const pendingAmount =
             parseFloat(values.total_amount || "0") -
             parseFloat(values.paid_amount || "0");
+
+          const referenceNumber = Invoice.GenerateReferenceNumber();
+
           const patient = {
             fullname: values.fullname,
             mobile: values.mobile,
             treatment: values.treatment,
+            patientRegistrationId: "", // Add this to meet IPatient type requirement
             invoice: {
               description: values.fullname,
               total: parseFloat(values.total_amount || "0"),
+              referenceNumber: referenceNumber,
               transactions: [
                 {
                   status: ITransactionStatus.Pending,
@@ -115,29 +123,25 @@ export const NewPatient = () => {
               ],
             },
           } as IPatient;
+
+          patient.invoice.transactions = patient.invoice.transactions.filter(t => !(t.amount === 0 && t.status === ITransactionStatus.Paid));
           const insert = await window.electronAPI.insertPatient(patient);
 
-          console.log("Insert: ");
-          console.table(insert);
-          console.log("Fetch: ");
           const allPatients = await window.electronAPI.fetchAll();
-          console.table(allPatients);
-          setPatients(allPatients); // Update the patients state with all patients
+          setPatients(allPatients);
 
-          // Set the patient data after submission
           setPatientData({
             patient: {
               fullname: values.fullname,
               mobile: values.mobile,
-              patientRegistrationId: "", // Example ID
-              referenceNumber: "", // Example bill number
+              patientRegistrationId: "", // This will need to be fetched properly in real application
+              referenceNumber: referenceNumber,
             },
             values,
           });
 
-          // Show toast notification after form submission
           toast.success("Bill submitted successfully!", {
-            position: "top-center", // Use a string for the position
+            position: "top-center",
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
@@ -222,10 +226,7 @@ export const NewPatient = () => {
                   {(
                     parseFloat(values.total_amount || "0") -
                     parseFloat(values.paid_amount || "0")
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                    minimumFractionDigits: 2,
-                  })}
+                  ).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -258,7 +259,7 @@ export const NewPatient = () => {
           <BillFormat ref={printRef} patient={patientData.patient} values={patientData.values} />
         </div>
       )}
-      <ToastContainer /> {/* Add ToastContainer to render toast notifications */}
+      <ToastContainer />
     </div>
   );
 };
