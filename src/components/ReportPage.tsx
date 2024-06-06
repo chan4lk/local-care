@@ -110,7 +110,7 @@ const ReportPage = () => {
           <div className="flex justify-center mt-4">
             <button
               onClick={handlePrintSummary}
-              className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
+              className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
               >
               Print Summary
             </button>
@@ -128,7 +128,7 @@ const ReportPage = () => {
           <div className="flex justify-center mt-4">
             <button
               onClick={handlePrintSummary}
-              className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
+              className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
               >
               Print Summary
             </button>
