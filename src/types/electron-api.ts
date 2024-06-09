@@ -37,11 +37,7 @@ export interface ITransaction {
     name?:string;
     mobile?:string;
     paymentMethod: PaymentMethod;
-    createdAt?: string; // Add the 'timestamp' property
-    date: string; // Assuming date is stored as a string
-
-
-
+    createdAt?: Date; // Add the 'timestamp' property
 }
 
 export interface ElectronAPI {

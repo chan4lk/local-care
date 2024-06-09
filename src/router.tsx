@@ -23,7 +23,7 @@ const router = createHashRouter([
   },
   {
     path: "/report",
-    element: <ReportPageContainer patients={patients} />,
+    element: <ReportPageContainer />,
   },
 ]);
 

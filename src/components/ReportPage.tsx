@@ -10,22 +10,24 @@ const ReportPage = () => {
   const [transactions, setTransactions] = useState<Array<ITransaction>>([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const summaryRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchTransactions = async (start: Date, end: Date) => {
       const data = await window.electronAPI.fetchPaidByDateRange({ start, end });
+      console.log("monthly  summary", summaryType,start, end, data);
       setTransactions(data);
     };
-
+    console.log("summary", summaryType);
+    const today = new Date();
     if (summaryType === "daily") {
-      const today = new Date();
       fetchTransactions(today, today);
     } else if (summaryType === "monthly") {
+      
+      const selectedYear = today.getFullYear();
+      const selectedMonth = today.getMonth();
       const startOfMonth = new Date(selectedYear, selectedMonth, 1);
-      const endOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
+      const endOfMonth = today;
       fetchTransactions(startOfMonth, endOfMonth);
     } else if (summaryType === "custom") {
       fetchTransactions(startDate, endDate);
@@ -33,7 +35,7 @@ const ReportPage = () => {
     return () => {
       setTransactions([]);
     };
-  }, [summaryType, startDate, endDate, selectedYear, selectedMonth]);
+  }, [summaryType, startDate, endDate]);
 
   const handlePrintSummary = useReactToPrint({
     content: () => summaryRef.current,
@@ -47,7 +49,7 @@ const ReportPage = () => {
         <select
           value={summaryType}
           onChange={(e) => setSummaryType(e.target.value)}
-          className=" p-4 bg-blue-100 rounded-lg shadow-md m-4 cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 text-center font-bold  text-center"
+          className=" p-4 bg-blue-100 rounded-lg shadow-md m-4 cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 text-center font-bold"
         >
           <option value="daily">Day Summary</option>
           <option value="monthly">Month Summary</option>
@@ -89,7 +91,7 @@ const ReportPage = () => {
       {summaryType === "monthly" && (
         <>
           <div className="flex justify-center mx-auto mt-4" ref={summaryRef}>
-              <MonthSummary transactions={transactions} />
+              <DaySummary transactions={transactions} />
             </div>
         
           <div className="flex justify-center">
@@ -105,7 +107,7 @@ const ReportPage = () => {
             {summaryType === "custom" && (
         <>
           <div className="flex justify-center mx-auto mt-4" ref={summaryRef}>
-              <MonthSummary transactions={transactions} />
+              <DaySummary transactions={transactions} />
             </div>
         
           <div className="flex justify-center">
