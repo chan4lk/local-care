@@ -14,6 +14,8 @@ export interface IInvoice{
     description?: string;
     total: number;
     transactions: ITransaction[];
+    referenceNumber: string; // Add this property
+
 
 }
 
@@ -36,6 +38,8 @@ export interface ITransaction {
     mobile?:string;
     paymentMethod: PaymentMethod;
     createdAt?: string; // Add the 'timestamp' property
+    date: string; // Assuming date is stored as a string
+
 
 
 }

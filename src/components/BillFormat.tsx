@@ -63,44 +63,45 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
           <table className="w-full mt-4 border-collapse">
             <thead>
               <tr>
-                <th className="text-left p-2 border-dashed border-t border-b border-gray-300">ITEM</th>
-                <th className="text-center p-2 border-dashed border-t border-b border-gray-300">QTY</th>
-                <th className="text-right p-2 border-dashed border-t border-b border-gray-300">AMOUNT</th>
+                <th className="text-left p-1 border-dashed border-t border-b border-gray-300">ITEM</th>
+                <th className="text-center p-1 border-dashed border-t border-b border-gray-300">QTY</th>
+                <th className="text-right p-1 border-dashed border-t border-b border-gray-300">AMOUNT</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="p-2 border-dashed border-b border-gray-300">{values.treatment}</td>
-                <td className="text-center p-2 border-dashed border-b border-gray-300">1</td>
-                <td className="text-right p-2 border-dashed border-b border-gray-300">
+                <td className="p-1 border-dashed border-b border-gray-300">{values.treatment}</td>
+                <td className="text-center p-1 border-dashed border-b border-gray-300">1</td>
+                <td className="text-right p-1 border-dashed border-b border-gray-300">
                   {formatNumberWithCommas(parseFloat(values.total_amount || '0'))}
                 </td>
               </tr>
+              <tr>
+                <td className="p-0 border-dashed border-t border-white"></td>
+                <td className="font-bold p-0 border-dashed border-t border-white">TOTAL (LKR)</td>
+                <td className="text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.total_amount || '0'))}</td>
+              </tr>
+              <tr>
+                <td className="p-0 border-dashed border-t border-white"></td>
+                <td className="font-bold p-0 border-dashed border-t border-white">PREVIOUS PAYMENTS (LKR)</td>
+                <td className="text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.previous_paid || '0'))}</td>
+              </tr>
+              <tr>
+                <td className="p-0 border-dashed border-t border-white"></td>
+                <td className="font-bold p-0 border-dashed border-t border-white">PAID AMOUNT (LKR)</td>
+                <td className="text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.paid_amount || '0'))}</td>
+              </tr>
+              <tr>
+                <td className="p-0 border-dashed border-t border-white"></td>
+                <td className="font-bold p-0 border-dashed border-t border-white">DUE AMOUNT (LKR)</td>
+                <td className="text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(
+                  parseFloat(values.total_amount || '0') -
+                  parseFloat(values.previous_paid || '0') -
+                  parseFloat(values.paid_amount || '0')
+                )}</td>
+              </tr>
             </tbody>
           </table>
-
-          <div className="mt-4">
-            <div className="flex justify-between">
-              <p className="font-bold ml-auto ">TOTAL (LKR)</p>
-              <p className="ml-4">{formatNumberWithCommas(parseFloat(values.total_amount || '0'))}</p>
-            </div>
-            <div className="flex justify-between">
-              <p className="font-bold ml-auto ">PREVIOUS PAYMENTS (LKR)</p>
-              <p className="ml-4">{formatNumberWithCommas(parseFloat(values.previous_paid || '0'))}</p>
-            </div>
-            <div className="flex justify-between">
-              <p className="font-bold ml-auto ">PAID AMOUNT (LKR)</p>
-              <p className="ml-4">{formatNumberWithCommas(parseFloat(values.paid_amount || '0'))}</p>
-            </div>
-            <div className="flex justify-between">
-              <p className="font-bold ml-auto ">DUE AMOUNT (LKR)</p>
-              <p className="ml-4">{formatNumberWithCommas(
-                parseFloat(values.total_amount || '0') -
-                parseFloat(values.previous_paid || '0') -
-                parseFloat(values.paid_amount || '0')
-              )}</p>
-            </div>
-          </div>
         </div>
       </div>
     );
@@ -108,5 +109,4 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
 );
 
 BillFormat.displayName = 'BillFormat';
-
 export default BillFormat;

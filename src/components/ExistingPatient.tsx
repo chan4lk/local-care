@@ -6,9 +6,9 @@ import { validationSchema } from './Schema';
 import { Back } from './BackButton';
 import { Search } from './Search';
 import { IPatient, ITransactionStatus, PaymentMethod } from '../types/electron-api';
-import BillFormat from './BillFormat'; 
-import { toast, ToastContainer } from "react-toastify"; // Import toast and ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
+import BillFormat from './BillFormat';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface FormValues {
   fullname: string;
@@ -16,8 +16,8 @@ interface FormValues {
   treatment: string;
   total_amount: string;
   paid_amount: string;
-  payment_type: string; 
-  previous_paid?: string; 
+  payment_type: string;
+  previous_paid?: string;
 }
 
 export const ExistingPatient = () => {
@@ -26,25 +26,27 @@ export const ExistingPatient = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    trigger: () => <button style={{ display: 'none' }}>Print Trigger</button>, // Hidden button to satisfy the type requirement
+    trigger: () => <button style={{ display: 'none' }}>Print Trigger</button>,
   });
 
   return (
     <div className="container mx-auto mt-4">
       <Back />
-      <h1 className="text-3xl font-bold mb-4 text-center hover:text-green-500 transition-colors duration-300">
-        Existing Patient
-      </h1>
+      <div className="flex flex-wrap justify-center text-center">
+        <div className="w-1/2 p-4 bg-white-100 rounded-lg hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-400 mb-8">
+          <h2 className="text-2xl font-bold">Existing Patient</h2>
+        </div>
+      </div>
+      
       {patient == null ? (
         <Search setPatient={setPatient} />
       ) : (
         <Formik
           initialValues={{
-            ...patient,
-            total_amount: patient.invoice.transactions
-              .map((t) => t.amount)
-              .reduce((sum, current) => sum + current, 0)
-              .toString(),
+            fullname: patient.fullname,
+            mobile: patient.mobile,
+            treatment: patient.treatment,
+            total_amount: patient.invoice.total.toString(),
             paid_amount: '',
             payment_type: "cash",
             previous_paid: patient.invoice.transactions
@@ -59,8 +61,9 @@ export const ExistingPatient = () => {
               parseFloat(values.total_amount || '0') -
               parseFloat(values.previous_paid || '0') -
               parseFloat(values.paid_amount || '0');
-            const patientDetails = {
-              id: patient.id,
+
+            const updatedPatient = {
+              ...patient,
               fullname: values.fullname,
               mobile: values.mobile,
               treatment: values.treatment,
@@ -74,7 +77,7 @@ export const ExistingPatient = () => {
                     status: ITransactionStatus.Pending,
                     amount: pendingAmount,
                     description: 'Pending Payment',
-                    paymentMethod: PaymentMethod.None
+                    paymentMethod: PaymentMethod.None,
                   },
                   {
                     status: ITransactionStatus.Paid,
@@ -85,9 +88,10 @@ export const ExistingPatient = () => {
                 ],
               },
             } as IPatient;
-            const insert = await window.electronAPI.insertPatient(patientDetails);
 
-            // Show toast notification after form submission
+            updatedPatient.invoice.transactions = updatedPatient.invoice.transactions.filter(t => !(t.amount === 0 && t.status === ITransactionStatus.Paid));
+            const insert = await window.electronAPI.insertPatient(updatedPatient);
+
             toast.success("Bill submitted successfully!", {
               position: "top-center",
               autoClose: 5000,
@@ -97,6 +101,9 @@ export const ExistingPatient = () => {
               draggable: true,
               progress: undefined,
             });
+
+            setFormSubmitted(true);
+            resetForm();
           }}
         >
           {({
@@ -197,16 +204,16 @@ export const ExistingPatient = () => {
                 <div className="flex items-center justify-between">
                   <button
                     type="button"
-                    onClick={() => handleSubmit()} // Manually trigger form submission
+                    onClick={() => handleSubmit()}
                     disabled={isSubmitting}
-                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md  cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold mr-4" // Added margin-right
+                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold mr-4"
                   >
                     Submit
                   </button>
                   <button
                     type="button"
                     onClick={handlePrint}
-                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md  cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
                   >
                     Print Bill
                   </button>
@@ -219,7 +226,7 @@ export const ExistingPatient = () => {
           )}
         </Formik>
       )}
-      <ToastContainer /> {/* Add ToastContainer to render toast notifications */}
+      <ToastContainer />
     </div>
   );
 };
