@@ -10,8 +10,6 @@ const ReportPage = () => {
   const [transactions, setTransactions] = useState<Array<ITransaction>>([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const summaryRef = useRef<any>(null);
 
   useEffect(() => {
@@ -24,6 +22,8 @@ const ReportPage = () => {
       const today = new Date();
       fetchTransactions(today, today);
     } else if (summaryType === "monthly") {
+      const selectedYear = new Date().getFullYear();
+      const selectedMonth = new Date().getMonth();
       const startOfMonth = new Date(selectedYear, selectedMonth, 1);
       const endOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
       fetchTransactions(startOfMonth, endOfMonth);
@@ -33,7 +33,7 @@ const ReportPage = () => {
     return () => {
       setTransactions([]);
     };
-  }, [summaryType, startDate, endDate, selectedYear, selectedMonth]);
+  }, [summaryType, startDate, endDate]);
 
   const handlePrintSummary = useReactToPrint({
     content: () => summaryRef.current,
