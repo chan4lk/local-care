@@ -47,7 +47,7 @@ const ReportPage = () => {
         <select
           value={summaryType}
           onChange={(e) => setSummaryType(e.target.value)}
-          className=" p-4 bg-blue-100 rounded-lg shadow-md m-4 cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 text-center font-bold  text-center"
+          className=" p-4 bg-blue-100 rounded-lg shadow-md m-4 cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 text-center font-bold"
         >
           <option value="daily">Day Summary</option>
           <option value="monthly">Month Summary</option>

@@ -8,23 +8,12 @@ import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-a
 import BillFormat from './BillFormat';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Invoice from '../database/models/Invoice'; // Import the Invoice class
-
-interface FormValues {
-  fullname: string;
-  mobile: string;
-  treatment: string;
-  total_amount: string;
-  paid_amount: string;
-  payment_type: string;
-  previous_paid?: string;
-}
+import {GenerateReferenceNumber} from '../database/helper'; // Import the Invoice class
 
 export const NewPatient = () => {
   const printRef = useRef(null);
   const [patientData, setPatientData] = useState(null);
   const [patients, setPatients] = useState<IPatient[]>([]);
-  const [formSubmitted, setFormSubmitted] = useState(false);
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
   } as ReactToPrintProps);
@@ -96,7 +85,7 @@ export const NewPatient = () => {
             parseFloat(values.total_amount || "0") -
             parseFloat(values.paid_amount || "0");
 
-          const referenceNumber = Invoice.GenerateReferenceNumber();
+          const referenceNumber = GenerateReferenceNumber();
 
           const patient = {
             fullname: values.fullname,
