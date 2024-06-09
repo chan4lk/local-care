@@ -156,8 +156,8 @@ export const ExistingPatient = () => {
                     onBlur={handleBlur}
                     className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
                   >
-                    <option value="cash">cash</option>
-                    <option value="card">card</option>
+                    <option value="cash">Cash</option>
+                    <option value="card">Card</option>
                   </select>
                 </div>
                 <div className="flex items-center justify-between">
