@@ -1,65 +1,55 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Formik, useFormikContext } from "formik"; // Import useFormikContext
+import React, { useRef, useState } from "react";
+import { Formik, useFormikContext } from "formik";
 import { useReactToPrint, ReactToPrintProps } from "react-to-print";
 import { SimpleInput } from "../components/SimpleInput";
 import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-api";
 import BillFormat from './BillFormat';
-import DailySummary from './DailySummary'; // Import DailySummary component
-
-
-interface FormValues {
-  fullname: string;
-  mobile: string;
-  treatment: string;
-  total_amount: string;
-  paid_amount: string;
-  payment_type: string; // Add payment_type field
-  previous_paid?: string; // Make previous_paid optional
-}
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {GenerateReferenceNumber} from '../database/helper'; // Import the Invoice class
 
 export const NewPatient = () => {
   const printRef = useRef(null);
   const [patientData, setPatientData] = useState(null);
-  const [patients, setPatients] = useState<IPatient[]>([]); // State to store all patients
-  
-
-  
-
+  const [patients, setPatients] = useState<IPatient[]>([]);
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
   } as ReactToPrintProps);
- // Defined clearForm function
- const clearForm = () => {
-  setPatientData(null); // Clear patient data
-};
 
-// ClearButton component to be placed outside of Formik
-const ClearButton = () => {
-  const { resetForm } = useFormikContext(); // Get resetForm function from Formik context
+  const clearForm = () => {
+    setPatientData(null);
+  };
 
-  const handleClick = () => {
-    resetForm(); // Reset form values
-    clearForm(); // Clear patient data
+  const ClearButton = () => {
+    const { resetForm } = useFormikContext();
+
+    const handleClick = () => {
+      resetForm();
+      clearForm();
+    };
+
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+      >
+        Clear
+      </button>
+    );
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className="ml-4 px-4 py-2 bg-red-100 text-black font-bold rounded-md hover:bg-red-300 focus:outline-none focus:bg-red-400"
-    >
-      Clear
-    </button>
-  );
-};
-  return (
-    <div className="container mx-auto">
-      <div className="flex items-center ">
-        <Back />
-        <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2">New Patient</h1>
+    <div className="container mx-auto mt-4">
+      <Back />
+      <div className="flex flex-wrap justify-center text-center">
+        <div className="w-1/2 p-4 bg-gray-100 rounded-lg shadow-md hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 mb-8">
+          <h2 className="text-lg font-bold">New Patient</h2>
+        </div>
       </div>
+      
       <Formik
         initialValues={{
           fullname: "",
@@ -67,60 +57,88 @@ const ClearButton = () => {
           treatment: "",
           total_amount: "",
           paid_amount: "",
-          payment_type: "cash", 
-          previous_paid: "", 
+          payment_type: "cash",
+          previous_paid: "",
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
+          const duplicatePatient = patients.find(
+            (patient) =>
+              patient.fullname === values.fullname &&
+              patient.mobile === values.mobile
+          );
+
+          if (duplicatePatient) {
+            toast.error("Patient already submitted!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            return;
+          }
+
           const pendingAmount =
             parseFloat(values.total_amount || "0") -
             parseFloat(values.paid_amount || "0");
+
+          const referenceNumber = GenerateReferenceNumber();
+
           const patient = {
             fullname: values.fullname,
             mobile: values.mobile,
             treatment: values.treatment,
+            patientRegistrationId: "", // Add this to meet IPatient type requirement
             invoice: {
               description: values.fullname,
               total: parseFloat(values.total_amount || "0"),
+              referenceNumber: referenceNumber,
               transactions: [
                 {
                   status: ITransactionStatus.Pending,
                   amount: pendingAmount,
                   description: "Pending Payment",
-                  paymentMethod: PaymentMethod.None
+                  paymentMethod: PaymentMethod.None,
                 },
                 {
                   status: ITransactionStatus.Paid,
                   amount: parseFloat(values.paid_amount || "0"),
                   description: `Paid Amount (${values.payment_type})`,
                   paymentMethod: values.payment_type,
-
                 },
               ],
             },
           } as IPatient;
+
+          patient.invoice.transactions = patient.invoice.transactions.filter(t => !(t.amount === 0 && t.status === ITransactionStatus.Paid));
           const insert = await window.electronAPI.insertPatient(patient);
 
-          console.log("Insert: ");
-          console.table(insert);
-          console.log("Fetch: ");
           const allPatients = await window.electronAPI.fetchAll();
-          console.table(allPatients);
-          setPatients(allPatients); // Update the patients state with all patients
+          setPatients(allPatients);
 
-          // Set the patient data after submission
           setPatientData({
             patient: {
               fullname: values.fullname,
               mobile: values.mobile,
-              patientRegistrationId: '', // Example ID
-              referenceNumber: '', // Example bill number
+              patientRegistrationId: "", // This will need to be fetched properly in real application
+              referenceNumber: referenceNumber,
             },
             values,
           });
-          
+
+          toast.success("Bill submitted successfully!", {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
         }}
-        
       >
         {({ handleSubmit, isSubmitting, values, handleChange, handleBlur }) => (
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -176,11 +194,10 @@ const ClearButton = () => {
                 onBlur={handleBlur}
                 className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
               >
-                <option value="cash">Cash</option>
-                <option value="card">Card</option>
+                <option value="cash">cash</option>
+                <option value="card">card</option>
               </select>
             </div>
-
             <div className="flex items-center justify-between">
               <div></div>
               <div className="flex items-center">
@@ -198,51 +215,40 @@ const ClearButton = () => {
                   {(
                     parseFloat(values.total_amount || "0") -
                     parseFloat(values.paid_amount || "0")
-                  ).toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 2 })}
+                  ).toLocaleString()}
                 </span>
               </div>
             </div>
-            <div>
+            <div className="flex items-center justify-between space-x-4">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
-                >
+                className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+              >
                 Submit
               </button>
-              {/* Render the print button when patientData is available */}
-      {patientData && (
-        <button
-  id="print-bill-button" // Add id for the print button
-  onClick={() => {
-    handlePrint(); // Trigger printing
-  }}
-  className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
->
-  Print Bill
-</button>
-
-
-      )}
-     {/* Render Clear button */}
-     <ClearButton />
-              </div>
-              
+              {patientData && (
+                <button
+                  id="print-bill-button"
+                  onClick={() => {
+                    handlePrint();
+                  }}
+                  className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+                >
+                  Print Bill
+                </button>
+              )}
+              <ClearButton />
+            </div>
           </form>
         )}
       </Formik>
-      {/* Render the BillFormat component after form submission */}
       {patientData && (
         <div className="hidden">
-          <BillFormat
-            ref={printRef}
-            patient={patientData.patient}
-            values={patientData.values}
-          />
+          <BillFormat ref={printRef} patient={patientData.patient} values={patientData.values} />
         </div>
       )}
-
-      
+      <ToastContainer />
     </div>
   );
 };

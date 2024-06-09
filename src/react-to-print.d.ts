@@ -14,4 +14,3 @@ declare module 'react-to-print' {
   
     export function useReactToPrint(props: ReactToPrintProps): () => void;
   }
-s  

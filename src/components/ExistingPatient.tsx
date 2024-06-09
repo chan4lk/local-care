@@ -1,47 +1,41 @@
 import React, { useRef, useState } from 'react';
 import { Formik } from 'formik';
-import { useReactToPrint, ReactToPrintProps } from "react-to-print";
+import { useReactToPrint } from "react-to-print";
 import { SimpleInput } from '../components/SimpleInput';
 import { validationSchema } from './Schema';
 import { Back } from './BackButton';
 import { Search } from './Search';
 import { IPatient, ITransactionStatus, PaymentMethod } from '../types/electron-api';
-import BillFormat from './BillFormat'; 
-interface FormValues {
-  fullname: string;
-  mobile: string;
-  treatment: string;
-  total_amount: string;
-  paid_amount: string;
-  payment_type: string; 
-  previous_paid?: string; 
-}
+import BillFormat from './BillFormat';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const ExistingPatient = () => {
   const [patient, setPatient] = useState<IPatient | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
-
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
-    trigger: () => <button style={{ display: 'none' }}>Print Trigger</button>, // Hidden button to satisfy the type requirement
+    trigger: () => <button style={{ display: 'none' }}>Print Trigger</button>,
   });
 
   return (
-    <div className="container mx-auto">
-      <div className="flex items-center">
-        <Back />
-        <h1 className="text-3xl font-bold mt-8 mb-8 px-5 py-2">Existing Patient</h1>
+    <div className="container mx-auto mt-4">
+      <Back />
+      <div className="flex flex-wrap justify-center text-center">
+        <div className="w-1/2 p-4 bg-white-100 rounded-lg hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-400 mb-8">
+          <h2 className="text-2xl font-bold">Existing Patient</h2>
+        </div>
       </div>
+      
       {patient == null ? (
         <Search setPatient={setPatient} />
       ) : (
         <Formik
           initialValues={{
-            ...patient,
-            total_amount: patient.invoice.transactions
-              .map((t) => t.amount)
-              .reduce((sum, current) => sum + current, 0)
-              .toString(),
+            fullname: patient.fullname,
+            mobile: patient.mobile,
+            treatment: patient.treatment,
+            total_amount: patient.invoice.total.toString(),
             paid_amount: '',
             payment_type: "cash",
             previous_paid: patient.invoice.transactions
@@ -56,8 +50,9 @@ export const ExistingPatient = () => {
               parseFloat(values.total_amount || '0') -
               parseFloat(values.previous_paid || '0') -
               parseFloat(values.paid_amount || '0');
-            const patientDetails = {
-              id: patient.id,
+
+            const updatedPatient = {
+              ...patient,
               fullname: values.fullname,
               mobile: values.mobile,
               treatment: values.treatment,
@@ -71,7 +66,7 @@ export const ExistingPatient = () => {
                     status: ITransactionStatus.Pending,
                     amount: pendingAmount,
                     description: 'Pending Payment',
-                    paymentMethod: PaymentMethod.None
+                    paymentMethod: PaymentMethod.None,
                   },
                   {
                     status: ITransactionStatus.Paid,
@@ -82,8 +77,22 @@ export const ExistingPatient = () => {
                 ],
               },
             } as IPatient;
-            const insert = await window.electronAPI.insertPatient(patientDetails);
+
+            updatedPatient.invoice.transactions = updatedPatient.invoice.transactions.filter(t => !(t.amount === 0 && t.status === ITransactionStatus.Paid));
+            const insert = await window.electronAPI.insertPatient(updatedPatient);
+            console.log(insert);
             
+            setPatient(insert);
+            resetForm();
+            toast.success("Bill submitted successfully!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
           }}
         >
           {({
@@ -133,24 +142,24 @@ export const ExistingPatient = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-              <label
-                htmlFor="payment_type"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Payment Type
-              </label>
-              <select
-                id="payment_type"
-                name="payment_type"
-                value={values.payment_type}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
-              >
-                <option value="cash">Cash</option>
-                <option value="card">Card</option>
-              </select>
-            </div>
+                  <label
+                    htmlFor="payment_type"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Payment Type
+                  </label>
+                  <select
+                    id="payment_type"
+                    name="payment_type"
+                    value={values.payment_type}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
+                  >
+                    <option value="cash">cash</option>
+                    <option value="card">card</option>
+                  </select>
+                </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <label htmlFor="amount_due" className="block text-sm font-medium text-gray-700 mr-4">
@@ -181,19 +190,19 @@ export const ExistingPatient = () => {
                     </span>
                   </div>
                 </div>
-                <div>
+                <div className="flex items-center justify-between">
                   <button
                     type="button"
-                    onClick={() => handleSubmit()} // Manually trigger form submission
+                    onClick={() => handleSubmit()}
                     disabled={isSubmitting}
-                    className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-300 focus:outline-none focus:bg-blue-400"
+                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold mr-4"
                   >
                     Submit
                   </button>
                   <button
                     type="button"
                     onClick={handlePrint}
-                    className="ml-4 px-4 py-2 bg-green-100 text-black font-bold rounded-md hover:bg-green-300 focus:outline-none focus:bg-green-400"
+                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
                   >
                     Print Bill
                   </button>
@@ -206,6 +215,9 @@ export const ExistingPatient = () => {
           )}
         </Formik>
       )}
+      <ToastContainer />
     </div>
   );
 };
+
+export default ExistingPatient;

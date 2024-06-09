@@ -14,6 +14,8 @@ export interface IInvoice{
     description?: string;
     total: number;
     transactions: ITransaction[];
+    referenceNumber: string; // Add this property
+
 
 }
 
@@ -22,8 +24,8 @@ export enum ITransactionStatus {
     Paid = "paid",
 }
 export enum PaymentMethod {
-    Cash = "cash",
-    Card = "card",
+    cash = "cash",
+    card = "card",
     None = "none"
 
 }
@@ -35,9 +37,7 @@ export interface ITransaction {
     name?:string;
     mobile?:string;
     paymentMethod: PaymentMethod;
-    createdAt?: string; // Add the 'timestamp' property
-
-
+    createdAt?: Date; // Add the 'timestamp' property
 }
 
 export interface ElectronAPI {

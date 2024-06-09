@@ -4,7 +4,7 @@ import Auditable from './Auditable';
 import Patient from './Patient';
 
 @Entity()
-export default class Invoice extends Auditable{
+export default class Invoice extends Auditable {
     @PrimaryGeneratedColumn()
     id?: number;
 
@@ -13,12 +13,11 @@ export default class Invoice extends Auditable{
 
     @OneToOne(() => Patient, (patient) => patient.invoice)
     @JoinColumn()
-    patient: Relation<Patient>
+    patient: Relation<Patient>;
 
     @Column('decimal', { precision: 10, scale: 2 })
     total: number;
 
     @OneToMany(() => Transaction, (transaction) => transaction.invoice)
     transactions: Relation<Transaction[]>;
-
 }
