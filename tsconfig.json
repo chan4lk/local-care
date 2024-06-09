@@ -13,8 +13,6 @@
     "baseUrl": ".",
     "outDir": "dist",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "types": ["node", "react", "react-dom", "hoist-non-react-statics"]
-
+    "resolveJsonModule": true
   }
 }
