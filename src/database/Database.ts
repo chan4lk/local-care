@@ -79,23 +79,24 @@ export default class Database {
 
     public async fetchTransactionsByDate({ start, end }: { start: Date, end: Date }): Promise<ITransaction[]> {
         const transactionRepository = this.connection.getRepository(Transaction);
-
-        const startDate = start; // Creates a new Date object representing the current date and time
+        
+        const startDate = new Date(start.getTime()); // Creates a new Date object representing the current date and time
         startDate.setHours(0);
         startDate.setMinutes(0);
         startDate.setSeconds(0);
         
-        const endDate = end; // Creates a new Date object with the same date and time as startDate
+        const endDate = new Date(end.getTime()); // Creates a new Date object with the same date and time as startDate
         endDate.setHours(23); // Sets the time to 23:59:59 for the same day
         endDate.setMinutes(59);
         endDate.setSeconds(59);
+        console.log("report", startDate, endDate);
         
         return await transactionRepository
             .createQueryBuilder('transaction')
             .innerJoin('transaction.invoice', 'invoice')
             .innerJoin('invoice.patient', 'patient')  // <--- join invoice.patient to get patient data
             .where('transaction.status = :status', { status: ITransactionStatus.Paid })
-            .andWhere("strftime('%d', transaction.createdAt) BETWEEN strftime('%d', :startDate) AND strftime('%d', :endDate)", {
+            .andWhere("transaction.createdAt BETWEEN :startDate AND :endDate", {
                 startDate,
                 endDate,
             })

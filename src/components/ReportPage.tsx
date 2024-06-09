@@ -15,17 +15,19 @@ const ReportPage = () => {
   useEffect(() => {
     const fetchTransactions = async (start: Date, end: Date) => {
       const data = await window.electronAPI.fetchPaidByDateRange({ start, end });
+      console.log("monthly  summary", summaryType,start, end, data);
       setTransactions(data);
     };
-
+    console.log("summary", summaryType);
+    const today = new Date();
     if (summaryType === "daily") {
-      const today = new Date();
       fetchTransactions(today, today);
     } else if (summaryType === "monthly") {
-      const selectedYear = new Date().getFullYear();
-      const selectedMonth = new Date().getMonth();
+      
+      const selectedYear = today.getFullYear();
+      const selectedMonth = today.getMonth();
       const startOfMonth = new Date(selectedYear, selectedMonth, 1);
-      const endOfMonth = new Date(selectedYear, selectedMonth + 1, 0);
+      const endOfMonth = today;
       fetchTransactions(startOfMonth, endOfMonth);
     } else if (summaryType === "custom") {
       fetchTransactions(startDate, endDate);
@@ -89,7 +91,7 @@ const ReportPage = () => {
       {summaryType === "monthly" && (
         <>
           <div className="flex justify-center mx-auto mt-4" ref={summaryRef}>
-              <MonthSummary transactions={transactions} />
+              <DaySummary transactions={transactions} />
             </div>
         
           <div className="flex justify-center">
@@ -105,7 +107,7 @@ const ReportPage = () => {
             {summaryType === "custom" && (
         <>
           <div className="flex justify-center mx-auto mt-4" ref={summaryRef}>
-              <MonthSummary transactions={transactions} />
+              <DaySummary transactions={transactions} />
             </div>
         
           <div className="flex justify-center">
