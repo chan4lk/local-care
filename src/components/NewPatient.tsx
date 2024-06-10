@@ -191,7 +191,7 @@ export const NewPatient = () => {
             </div>
             <div className="flex items-center justify-between">
               <div></div>
-              <div className="flex items-center">
+              <div className ="flex items-center">
                 <label
                   htmlFor="amount_due"
                   className="block text-sm font-medium text-gray-700 mr-4"
