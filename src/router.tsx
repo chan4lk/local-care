@@ -5,6 +5,7 @@ import NewPatient from "./routes/NewPatientContainer";
 import ExistingPatient from "./routes/ExistingPatientContainer";
 import ReportPageContainer from "./routes/ReportPageContainer";
 import { IPatient } from './types/electron-api'; // Import IPatient type if needed
+import { Reports } from "./components/Reports";
 
 const patients: IPatient[] = []; // Assuming patients data is available here
 
@@ -23,6 +24,18 @@ const router = createHashRouter([
   },
   {
     path: "/report",
+    element: <Reports />,
+  },
+  {
+    path: "/report/paid",
+    element: <ReportPageContainer />,
+  },
+  {
+    path: "/report/due",
+    element: <ReportPageContainer />,
+  },
+  {
+    path: "/report/patients",
     element: <ReportPageContainer />,
   },
 ]);

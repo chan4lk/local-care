@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export const ExistingPatient = () => {
   const [patient, setPatient] = useState<IPatient | null>(null);
+  const [disableSubmit, setDisableSubmit] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
@@ -38,6 +39,7 @@ export const ExistingPatient = () => {
             total_amount: patient.invoice.total.toString(),
             paid_amount: '',
             payment_type: "cash",
+            referenceNumber: patient.invoice.referenceNumber,
             previous_paid: patient.invoice.transactions
               .filter((t) => t.status === ITransactionStatus.Paid)
               .map((t) => t.amount)
@@ -45,11 +47,14 @@ export const ExistingPatient = () => {
               .toString(),
           }}
           validationSchema={validationSchema}
-          onSubmit={async (values, { resetForm }) => {
+          onSubmit={async (values, { setFormikState, setSubmitting }) => {
             const pendingAmount =
               parseFloat(values.total_amount || '0') -
               parseFloat(values.previous_paid || '0') -
               parseFloat(values.paid_amount || '0');
+
+              setSubmitting(true);
+              setDisableSubmit(true);
 
             const updatedPatient = {
               ...patient,
@@ -83,7 +88,6 @@ export const ExistingPatient = () => {
             console.log(insert);
             
             setPatient(insert);
-            resetForm();
             toast.success("Bill submitted successfully!", {
               position: "top-center",
               autoClose: 5000,
@@ -107,6 +111,7 @@ export const ExistingPatient = () => {
                 <SimpleInput
                   handleBlur={handleBlur}
                   handleChange={handleChange}
+                  disabled={disableSubmit}
                   values={values}
                   label="Full Name"
                   field="fullname"
@@ -114,6 +119,7 @@ export const ExistingPatient = () => {
                 <SimpleInput
                   handleBlur={handleBlur}
                   handleChange={handleChange}
+                  disabled={disableSubmit}
                   values={values}
                   label="Mobile"
                   field="mobile"
@@ -121,6 +127,7 @@ export const ExistingPatient = () => {
                 <SimpleInput
                   handleBlur={handleBlur}
                   handleChange={handleChange}
+                  disabled={disableSubmit}
                   values={values}
                   label="Treatment"
                   field="treatment"
@@ -129,6 +136,7 @@ export const ExistingPatient = () => {
                   <SimpleInput
                     handleBlur={handleBlur}
                     handleChange={handleChange}
+                    disabled={disableSubmit}
                     values={values}
                     label="Total Amount"
                     field="total_amount"
@@ -136,6 +144,7 @@ export const ExistingPatient = () => {
                   <SimpleInput
                     handleBlur={handleBlur}
                     handleChange={handleChange}
+                    disabled={disableSubmit}
                     values={values}
                     label="Amount Paid"
                     field="paid_amount"
@@ -151,6 +160,7 @@ export const ExistingPatient = () => {
                   <select
                     id="payment_type"
                     name="payment_type"
+                    disabled={disableSubmit}
                     value={values.payment_type}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -194,8 +204,8 @@ export const ExistingPatient = () => {
                   <button
                     type="button"
                     onClick={() => handleSubmit()}
-                    disabled={isSubmitting}
-                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold mr-4"
+                    disabled={isSubmitting || disableSubmit}
+                    className={`w-1/2 p-4 rounded-lg ${disableSubmit ? 'bg-blue-50': 'bg-blue-100  shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800'} font-bold mr-4`}
                   >
                     Submit
                   </button>
