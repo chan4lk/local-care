@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 
-export const Dashboard = () => {
+export const Reports = () => {
   const navigate = useNavigate();
   
-  const goToNew = () => navigate(`/new`);
-  const goToExisting = () => navigate(`/existing`);
-  const handleViewReport = () => {
-    navigate(`/report`);
+  const gotPayments = () => navigate(`/report/paid`);
+  const gotoDueBalances = () => navigate(`/report/due`);
+  const gotoPatientReport = () => {
+    navigate(`/report/patients`);
   };
 
   return (
@@ -20,24 +20,24 @@ export const Dashboard = () => {
       <div className="flex flex-wrap justify-center text-center">
         <div
           className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md  cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800"
-          onClick={goToNew}
+          onClick={gotPayments}
         >
-          <h2 className="text-lg font-bold">New Patient</h2>
-          <p className="text-sm">Create a new record.</p>
+          <h2 className="text-lg font-bold">Past Payments</h2>
+          <p className="text-sm">View cash and card payments.</p>
         </div>
         <div
           className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md m-4 cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800"
-          onClick={goToExisting}
+          onClick={gotoDueBalances}
         >
-          <h2 className="text-lg font-bold">Existing Patient</h2>
-          <p className="text-sm">Update existing record.</p>
+          <h2 className="text-lg font-bold">Due Balances</h2>
+          <p className="text-sm">View current due payments.</p>
         </div>
         <div
           className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800"
-          onClick={handleViewReport}
+          onClick={gotoPatientReport}
         >
-          <h2 className="text-lg font-bold">View Reports</h2>
-          <p className="text-sm">Daily & Monthly Summaries</p>
+          <h2 className="text-lg font-bold">Patients</h2>
+          <p className="text-sm">View all patients.</p>
 
         </div>
       </div>

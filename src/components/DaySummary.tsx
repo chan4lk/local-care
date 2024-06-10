@@ -4,6 +4,7 @@ import {
   ITransactionStatus,
   PaymentMethod,
 } from "../types/electron-api";
+import { ReportHeader } from "./report/ReportHeader";
 
 interface DailySummaryProps {
   transactions: ITransaction[];
@@ -32,33 +33,16 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
   // Calculate total of all payments
   const totalAll = totalcash + totalcard;
 
-  const currentDate = new Date();
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
   const mediumTime = new Intl.DateTimeFormat("en", {
     timeStyle: "short",
     dateStyle: "long",
   });
-  const formattedDate = currentDate.toLocaleDateString("en-US", options);
+  
 
   return (
     <div className="overflow-x-auto mt-8 mx-4">
-      <div className="flex flex-wrap justify-center text-center">
-        <div className="w-full p-4 bg-blue-100 rounded-lg shadow-md hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 mb-8">
-          <h2 className="text-2xl font-bold">
-            Rosewood Dental & Medical Hospital
-          </h2>
-          <p className="text-sm">{formattedDate}</p>
-        </div>
-      </div>
-
+      <ReportHeader />
       <div className="table-container">
-        {" "}
-        {/* Container for table and total payments */}
-        {/* Summary Table */}
         <table className="min-w-full divide-y divide-gray-200 mb-8 border border-gray-300">
           <thead className="bg-green-50">
             <tr>

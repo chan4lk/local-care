@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import DaySummary from "./DaySummary";
-import MonthSummary from "./MonthSummary";
 import { ITransaction } from "../types/electron-api";
 import { useReactToPrint } from "react-to-print";
 import { Back } from "./BackButton";
