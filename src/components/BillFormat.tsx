@@ -26,75 +26,74 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
         <div className="border-dashed border-2 border-gray-200 p-4">
           <div className="">
             <div className="flex">
-              <p className="font-bold w-2/5">BILL NO</p>
-              <p className="w-3/5">: {patient.referenceNumber}</p>
+              <p className="text-sm font-bold w-2/5">BILL NO</p>
+              <p className="text-sm w-3/5">: {patient.referenceNumber}</p>
             </div>
             <div className="flex">
-              <p className="font-bold w-2/5">BILL DATE</p>
-              <p className="w-3/5">: {new Date().toLocaleString()}</p>
+              <p className="text-sm font-bold w-2/5">BILL DATE</p>
+              <p className="text-sm w-3/5">: {new Date().toLocaleString()}</p>
             </div>
             <div className="flex">
-              <p className="font-bold w-2/5">PATIENT</p>
-              <p className="w-3/5">: {patient.fullname}</p>
+              <p className="text-sm font-bold w-2/5">PATIENT</p>
+              <p className="text-sm w-3/5">: {patient.fullname}</p>
             </div>
             <div className="flex">
-              <p className="font-bold w-2/5">PATIENT ID</p>
-              <p className="w-3/5">: {patient.patientRegistrationId || ''}</p>
+              <p className="text-sm font-bold w-2/5">PATIENT ID</p>
+              <p className="text-sm w-3/5">: {patient.patientRegistrationId || ''}</p>
             </div>
             <div className="flex">
-              <p className="font-bold w-2/5">APPOINTMENT NO</p>
-              <p className="w-3/5">: {''}</p>
+              <p className="text-sm font-bold w-2/5">APPOINTMENT NO</p>
+              <p className="text-sm w-3/5">: {''}</p>
             </div>
             <div className="flex justify-between">
               <div className="flex">
-                <p className="font-bold ">GENDER</p>
+                <p className="text-sm font-bold">GENDER</p>
               </div>
-              <div className="w-1/6 mr-2"> {/* Adjust the width and add margin */}
-                <p className="font-bold">AGE :</p>
+              <div className="w-1/6 mr-2">
+                <p className="text-sm font-bold">AGE :</p>
               </div>
             </div>
-            
             <div className="flex">
-              <p className="font-bold w-2/5">TELL NO</p>
-              <p className="w-3/5">: {patient.mobile}</p>
+              <p className="text-sm font-bold w-2/5">TELL NO</p>
+              <p className="text-sm w-3/5">: {patient.mobile}</p>
             </div>
           </div>
 
-          <table className="w-full mt-4 border-collapse">
-            <thead>
+          <table className="min-w-full divide-y divide-gray-200 mb-8 border border-gray-300">
+          <thead className="bg-green-50">
               <tr>
-                <th className="text-left p-1 border-dashed border-t border-b border-gray-300">ITEM</th>
-                <th className="text-center p-1 border-dashed border-t border-b border-gray-300">QTY</th>
-                <th className="text-right p-1 border-dashed border-t border-b border-gray-300">AMOUNT</th>
+                <th className="text-sm text-center p-1 border-dashed border-t border-b border-gray-300">ITEM</th>
+                <th className="text-sm text-center p-1 border-dashed border-t border-b border-gray-300">QTY</th>
+                <th className="text-sm text-right p-1 border-dashed border-t border-b border-gray-300">AMOUNT</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white ">
               <tr>
-                <td className="p-1 border-dashed border-b border-gray-300">{values.treatment}</td>
-                <td className="text-center p-1 border-dashed border-b border-gray-300">1</td>
-                <td className="text-right p-1 border-dashed border-b border-gray-300">
+                <td className="text-sm text-center px-6 p-0 border-dashed border-b border-gray-300">{values.treatment}</td>
+                <td className="text-sm px-6 text-center p-0 border-dashed border-b border-gray-300">1</td>
+                <td className="text-sm px-6 text-right p-0 border-dashed border-b border-gray-300">
                   {formatNumberWithCommas(parseFloat(values.total_amount || '0'))}
                 </td>
               </tr>
               <tr>
-                <td className="p-0 border-dashed border-t border-white"></td>
-                <td className="font-bold p-0 border-dashed border-t border-white">TOTAL (LKR)</td>
-                <td className="text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.total_amount || '0'))}</td>
+                <td className="px-6 p-0 "></td>
+                <td className="px-6 text-xs font-bold p-0 ">TOTAL (LKR)</td>
+                <td className="px-6 text-xs text-right p-0 ">{formatNumberWithCommas(parseFloat(values.total_amount || '0'))}</td>
               </tr>
               <tr>
-                <td className="p-0 border-dashed border-t border-white"></td>
-                <td className="font-bold p-0 border-dashed border-t border-white">PREVIOUS PAYMENTS (LKR)</td>
-                <td className="text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.previous_paid || '0'))}</td>
+                <td className="px-6 p-0 border-dashed border-t border-white"></td>
+                <td className="px-6 text-xs font-bold p-0 border-dashed border-t border-white">PREVIOUS PAYMENTS</td>
+                <td className="px-6 text-xs text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.previous_paid || '0'))}</td>
               </tr>
               <tr>
-                <td className="p-0 border-dashed border-t border-white"></td>
-                <td className="font-bold p-0 border-dashed border-t border-white">PAID AMOUNT (LKR)</td>
-                <td className="text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.paid_amount || '0'))}</td>
+                <td className="px-6 p-0 border-dashed border-t border-white"></td>
+                <td className="px-6  text-xs font-bold p-0 border-dashed border-t border-white">PAID AMOUNT </td>
+                <td className="px-6 text-xs text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.paid_amount || '0'))}</td>
               </tr>
               <tr>
-                <td className="p-0 border-dashed border-t border-white"></td>
-                <td className="font-bold p-0 border-dashed border-t border-white">DUE AMOUNT (LKR)</td>
-                <td className="text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(
+                <td className="px-6 p-0 border-dashed border-t border-white"></td>
+                <td className="px-6 text-xs font-bold p-0 border-dashed border-t border-white">DUE AMOUNT </td>
+                <td className="px-6 text-xs text-right p-0 border-dashed border-t border-white">{formatNumberWithCommas(
                   parseFloat(values.total_amount || '0') -
                   parseFloat(values.previous_paid || '0') -
                   parseFloat(values.paid_amount || '0')
