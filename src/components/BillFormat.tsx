@@ -60,8 +60,8 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
             </div>
           </div>
 
-          <table className="min-w-full divide-y divide-gray-200 mb-8 border border-gray-300">
-          <thead className="bg-green-50">
+          <table className="min-w-full border-dashed border-t border-gray-800">
+          <thead className="bg-white-">
               <tr>
                 <th className="text-sm text-center p-1 border-dashed border-t border-b border-gray-300">ITEM</th>
                 <th className="text-sm text-center p-1 border-dashed border-t border-b border-gray-300">QTY</th>
