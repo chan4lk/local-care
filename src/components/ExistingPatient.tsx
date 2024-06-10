@@ -23,8 +23,8 @@ export const ExistingPatient = () => {
     <div className="container mx-auto mt-4">
       <Back />
       <div className="flex flex-wrap justify-center text-center">
-        <div className="w-1/2 p-4 bg-white-100 rounded-lg hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-400 mb-8">
-          <h2 className="text-2xl font-bold">Existing Patient</h2>
+        <div className="w-1/2 p-4 bg-gray-100 rounded-lg shadow-md hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 mb-8">
+          <h2 className="text-lg font-bold">Existing  Patient</h2>
         </div>
       </div>
       
