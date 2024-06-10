@@ -9,6 +9,7 @@ interface BillFormatProps {
     total_amount: string;
     paid_amount: string;
     previous_paid: string;
+    referenceNumber: string;
   };
 }
 
@@ -27,7 +28,7 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
           <div className="">
             <div className="flex">
               <p className="text-sm font-bold w-2/5">BILL NO</p>
-              <p className="text-sm w-3/5">: {patient.referenceNumber}</p>
+              <p className="text-sm w-3/5">: {patient.referenceNumber || values.referenceNumber}</p>
             </div>
             <div className="flex">
               <p className="text-sm font-bold w-2/5">BILL DATE</p>

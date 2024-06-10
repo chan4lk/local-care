@@ -39,6 +39,7 @@ export const ExistingPatient = () => {
             total_amount: patient.invoice.total.toString(),
             paid_amount: '',
             payment_type: "cash",
+            referenceNumber: patient.invoice.referenceNumber,
             previous_paid: patient.invoice.transactions
               .filter((t) => t.status === ITransactionStatus.Paid)
               .map((t) => t.amount)
