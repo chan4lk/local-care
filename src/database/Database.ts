@@ -103,6 +103,7 @@ export default class Database {
             .select([
                 'transaction.id AS id',
                 'transaction.createdAt AS createdAt',
+                'transaction.updatedAt AS updatedAt',
                 'transaction.description AS description',
                 'transaction.status AS status',
                 'transaction.amount AS amount',
@@ -124,10 +125,12 @@ export default class Database {
             .select([
                 'transaction.id AS id',
                 'transaction.createdAt AS createdAt',
+                'transaction.updatedAt AS updatedAt',
                 'transaction.description AS description',
                 'transaction.status AS status',
                 'transaction.amount AS amount',
                 'transaction.paymentMethod AS paymentMethod',
+                'invoice.total AS total',
                 'patient.fullname AS name', // alias fullname as name
                 'patient.mobile AS mobile', // alias mobile as mobile
             ])

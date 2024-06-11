@@ -34,11 +34,12 @@ export interface ITransaction {
     description?: string;
     amount: number;
     status: ITransactionStatus;
-    totalAmount?: number; // Add this line
+    total?: number; // Add this line
     name?:string;
     mobile?:string;
     paymentMethod: PaymentMethod;
     createdAt?: Date; // Add the 'timestamp' property
+    updatedAt?: Date; // Add the 'timestamp' property
     
 }
 

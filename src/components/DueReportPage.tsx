@@ -3,7 +3,7 @@ import { useReactToPrint } from "react-to-print";
 import { Back } from "./BackButton";
 import { PrintButton } from "./PrintButton";
 import { ITransaction } from "../types/electron-api";
-import DaySummary from "./report/DaySummary";
+import DueSummary from "./report/DueSummary";
 
 const ReportPage = () => {
   const [transactions, setTransactions] = useState<Array<ITransaction>>([]);
@@ -35,7 +35,7 @@ const ReportPage = () => {
         <PrintButton handlePrintSummary={handlePrintSummary} />
       </div>
           <div className="flex justify-center mx-auto mt-auto" ref={summaryRef}>
-            <DaySummary transactions={transactions} title="Due Payments Report"/>
+            <DueSummary transactions={transactions} title="Due Payments Report"/>
           </div>
     </div>
   );
