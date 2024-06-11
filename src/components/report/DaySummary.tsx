@@ -3,8 +3,8 @@ import {
   ITransaction,
   ITransactionStatus,
   PaymentMethod,
-} from "../types/electron-api";
-import { ReportHeader } from "./report/ReportHeader";
+} from "../../types/electron-api";
+import { ReportHeader } from "./ReportHeader";
 
 interface DailySummaryProps {
   transactions: ITransaction[];
@@ -37,7 +37,6 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
     timeStyle: "short",
     dateStyle: "long",
   });
-  
 
   return (
     <div className="overflow-x-auto mt-8 mx-4">
@@ -56,13 +55,23 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
                 Date
               </th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300 font-bold">
+                Total Amount
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300 font-bold">
+                Due Balance
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300 font-bold">
                 Amount Paid
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {transactions.map((transaction, index) => {
-              const totalPaid = transaction.amount;
+              // Get user-entered values from the transaction data
+              const totalAmount = transaction.totalAmount ?? 0;
+              const totalPaid = transaction.amount ?? 0;
+              const dueBalance = totalAmount - totalPaid;
+
               return (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
@@ -74,36 +83,48 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
                     {mediumTime.format(new Date(transaction.createdAt))}
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                    Rs. {totalAmount.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
+                    Rs. {dueBalance.toFixed(2)}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
                     Rs. {totalPaid.toFixed(2)}
                   </td>
                 </tr>
               );
             })}
-            <tr>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
+            <tr className="hover:bg-gray-100 transition-colors">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
                 Total cash Payments:
               </td>
-              <td className="px-6   p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
                 Rs. {totalcash.toFixed(2)}
               </td>
             </tr>
-            <tr>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
+            <tr className="hover:bg-gray-100 transition-colors">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
                 Total card Payments:
               </td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
                 Rs. {totalcard.toFixed(2)}
               </td>
             </tr>
-            <tr>
+            <tr className="hover:bg-gray-100 transition-colors">
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
                 Total All Payments:
               </td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
