@@ -55,22 +55,13 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
                 Date
               </th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300 font-bold">
-                Total Amount
-              </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300 font-bold">
-                Due Balance
-              </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300 font-bold">
                 Amount Paid
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {transactions.map((transaction, index) => {
-              // Get user-entered values from the transaction data
-              const totalAmount = transaction.totalAmount ?? 0;
               const totalPaid = transaction.amount ?? 0;
-              const dueBalance = totalAmount - totalPaid;
 
               return (
                 <tr key={index}>
@@ -83,12 +74,6 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
                     {mediumTime.format(new Date(transaction.createdAt))}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                    Rs. {totalAmount.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                    Rs. {dueBalance.toFixed(2)}
-                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
                     Rs. {totalPaid.toFixed(2)}
                   </td>
@@ -96,8 +81,6 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
               );
             })}
             <tr className="hover:bg-gray-100 transition-colors">
-              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
@@ -110,8 +93,6 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
             <tr className="hover:bg-gray-100 transition-colors">
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
                 Total card Payments:
               </td>
@@ -120,8 +101,6 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
               </td>
             </tr>
             <tr className="hover:bg-gray-100 transition-colors">
-              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">

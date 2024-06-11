@@ -21,7 +21,7 @@ export const Search = ({ setPatient }: { setPatient: React.Dispatch<any> }) => {
           <input
             type="text"
             className="w-full p-2 pl-8 rounded border border-gray-200 bg-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:border-transparent"
-            placeholder="Search..."
+            placeholder="Search by Patient Name/Phone..."
             value={keyword}
             onChange={handleInput}
           />
@@ -68,7 +68,7 @@ export const Search = ({ setPatient }: { setPatient: React.Dispatch<any> }) => {
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              {item.fullname} - {item.createdAt?.toDateString()} - {" Rs. "}
+              {item.fullname} - {item.mobile} - {item.createdAt?.toDateString()} - {" Rs. "}
               {item.invoice.transactions
                 .filter((t) => t.status == ITransactionStatus.Pending)
                 .map((t) => t.amount)

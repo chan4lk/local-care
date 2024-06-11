@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Formik } from 'formik';
 import { useReactToPrint } from "react-to-print";
 import { SimpleInput } from '../components/SimpleInput';
-import { validationSchema } from './Schema';
+import { validationSchemaExisting as validationSchema } from './Schema';
 import { Back } from './BackButton';
 import { Search } from './Search';
 import { IPatient, ITransactionStatus, PaymentMethod } from '../types/electron-api';

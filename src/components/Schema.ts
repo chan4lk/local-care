@@ -18,3 +18,23 @@ export const validationSchema = Yup.object().shape({
     .max(Yup.ref("total_amount"), "Amount must not exceed the total amount")
     
 });
+
+export const validationSchemaExisting = Yup.object().shape({
+  fullname: Yup.string()
+    .min(2, "Too Short!")
+    .max(50, "Too Long!")
+    .required("Required"),
+  mobile: Yup.string()
+    .matches(/^[0-9]{10}$/, "Invalid phone number")
+    .required("Required"),
+  treatment: Yup.string()
+  .min(2, "Too Short!")
+  .max(50, "Too Long!")
+  .required("Required"),
+  total_amount: Yup.number().positive().required("Required"),
+  paid_amount: Yup.number()
+    .required("Required")
+    .min(1, "Amount must be positive")
+    .max(Yup.ref("total_amount"), "Amount must not exceed the total amount")
+    
+});
