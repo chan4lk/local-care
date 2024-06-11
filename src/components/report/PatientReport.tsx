@@ -17,7 +17,7 @@ const PatientReport: React.FC = () => {
 
   return (
     <div className="overflow-x-auto mt-8 mx-4">
-      <ReportHeader />
+      <ReportHeader title="Patients Report"/>
       <div className="table-container">
         <table className="min-w-full divide-y divide-gray-200 mb-8 border border-gray-300">
           <thead className="bg-green-50">

@@ -1,5 +1,5 @@
 import Layout from "../components/Layout";
-import PatientReport from "../components/report/PatientReport";
+import PatientReport from "../components/PatientsReportPage";
 
 const ReportPageContainer = () => (
   <Layout>

@@ -8,9 +8,10 @@ import { ReportHeader } from "./ReportHeader";
 
 interface DailySummaryProps {
   transactions: ITransaction[];
+  title: string;
 }
 
-const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
+const DailySummary: React.FC<DailySummaryProps> = ({ transactions, title }) => {
   const [totalcash, setTotalcash] = useState<number>(0);
   const [totalcard, setTotalcard] = useState<number>(0);
 
@@ -40,7 +41,7 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
 
   return (
     <div className="overflow-x-auto mt-8 mx-4">
-      <ReportHeader />
+      <ReportHeader title={title}/>
       <div className="table-container">
         <table className="min-w-full divide-y divide-gray-200 mb-8 border border-gray-300">
           <thead className="bg-green-50">

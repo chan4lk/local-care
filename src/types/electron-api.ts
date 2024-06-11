@@ -47,4 +47,5 @@ export interface ElectronAPI {
     fetchAll: () =>  Promise<IPatient[]>
     search: ({keyword}: {keyword:string}) =>  Promise<IPatient[]>
     fetchPaidByDateRange: (args: { start: Date, end: Date }) =>  Promise<ITransaction[]>
+    fetchPendingTransactions: () =>  Promise<ITransaction[]>
 }
