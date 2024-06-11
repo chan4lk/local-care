@@ -40,7 +40,7 @@ const createWindow = () => {
   })
 
   ipcMain.handle('database:fetch:pending', async (event, arg) => {
-    return await database.fetchPendingTransactionsByDate();
+    return await database.fetchPendingTransactions();
   })
 
   

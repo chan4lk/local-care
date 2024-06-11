@@ -113,7 +113,7 @@ export default class Database {
             .getRawMany();
     }
 
-    public async fetchPendingTransactionsByDate(): Promise<ITransaction[]> {
+    public async fetchPendingTransactions(): Promise<ITransaction[]> {
         const transactionRepository = this.connection.getRepository(Transaction);
       
         return await transactionRepository
