@@ -1,16 +1,19 @@
-import React from "react";
-import { ITransaction } from "../types/electron-api";
+import React, { useEffect, useState } from "react";
+import { IPatient } from "../../types/electron-api";
 import { ReportHeader } from "./ReportHeader";
+import { calculateTotalPaid } from "../../database/helper";
 
-interface PatientReportProps {
-  transactions: ITransaction[];
-}
+const PatientReport: React.FC = () => {
+  const [patients, setPatients] = useState<IPatient[]>([]);
 
-const PatientReport: React.FC<PatientReportProps> = ({ transactions }) => {
-  const mediumTime = new Intl.DateTimeFormat("en", {
-    timeStyle: "short",
-    dateStyle: "long",
-  });
+  useEffect(() => {
+    const fetchPatients = async () => {
+      const data = await window.electronAPI.fetchAll();
+      setPatients(data);
+    };
+
+    fetchPatients();
+  }, []);
 
   return (
     <div className="overflow-x-auto mt-8 mx-4">
@@ -29,7 +32,7 @@ const PatientReport: React.FC<PatientReportProps> = ({ transactions }) => {
                 Treatment
               </th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300 font-bold">
-                Agreed Total
+                Total
               </th>
               <th className="px-6 py-3 text-center text-xs font-medium text-gray-800 uppercase tracking-wider border border-gray-300 font-bold">
                 Paid Amount
@@ -40,21 +43,21 @@ const PatientReport: React.FC<PatientReportProps> = ({ transactions }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {transactions.map((transaction, index) => {
-              const agreedTotal = transaction.totalAmount ?? 0;
-              const paidAmount = transaction.amount ?? 0;
+            {patients.map((patient, index) => {
+              const agreedTotal = patient.invoice.total ?? 0;
+              const paidAmount = calculateTotalPaid(patient) ?? 0;
               const balanceToPay = agreedTotal - paidAmount;
 
               return (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                    {transaction.name}
+                    {patient.fullname}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                    {transaction.mobile}
+                    {patient.mobile}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                    {transaction.treatment}
+                    {patient.treatment}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
                     Rs. {agreedTotal.toFixed(2)}
