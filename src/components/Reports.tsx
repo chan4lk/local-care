@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Back } from "./BackButton";
 
 export const Reports = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export const Reports = () => {
 
   return (
     <div className="container mx-auto">
+      <Back />
       <div className="flex flex-wrap justify-center text-center">
                 <div className="w-3/4 p-4 bg-white-100 rounded-lg  hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-900 mb-8">
                     <h1 className="text-4xl font-bold"> Rosewood Dental & Medical Hospital</h1>

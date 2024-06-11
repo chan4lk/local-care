@@ -48,6 +48,7 @@ export const ExistingPatient = () => {
           }}
           validationSchema={validationSchema}
           onSubmit={async (values, { setFormikState, setSubmitting }) => {
+            if(disableSubmit) return;
             const pendingAmount =
               parseFloat(values.total_amount || '0') -
               parseFloat(values.previous_paid || '0') -

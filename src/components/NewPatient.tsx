@@ -65,6 +65,8 @@ export const NewPatient = () => {
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
+          if(disableSubmit) return;
+          
           setDisableSubmit(true);
           const pendingAmount =
             parseFloat(values.total_amount || "0") -
