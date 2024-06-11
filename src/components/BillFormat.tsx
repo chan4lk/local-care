@@ -43,22 +43,6 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
               <p className="w-3/5">: {patient.fullname}</p>
             </div>
             <div className="flex">
-              <p className="font-bold w-2/5">PATIENT ID</p>
-              <p className="w-3/5">: {patient.patientRegistrationId || ''}</p>
-            </div>
-            <div className="flex">
-              <p className="font-bold w-2/5">APPOINTMENT NO</p>
-              <p className="w-3/5">: {''}</p>
-            </div>
-            <div className="flex justify-between">
-              <div className="flex">
-                <p className="font-bold">GENDER</p>
-              </div>
-              <div className="w-1/6 mr-2">
-                <p className="font-bold">AGE :</p>
-              </div>
-            </div>
-            <div className="flex">
               <p className="font-bold w-2/5">TELL NO</p>
               <p className="w-3/5">: {patient.mobile}</p>
             </div>
