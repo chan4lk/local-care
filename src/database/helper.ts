@@ -9,7 +9,11 @@ export function GenerateReferenceNumber(): string {
 
 export function calculateTotalPaid(patient: IPatient){
     return patient.invoice.transactions
-              .filter((t) => t.status === ITransactionStatus.Paid)
-              .map((t) => t.amount)
-              .reduce((sum, current) => sum + current, 0);
+        .filter((t) => t.status === ITransactionStatus.Paid)
+        .map((t) => t.amount)
+        .reduce((sum, current) => sum + current, 0);
+}
+
+export function getCurrentDateTime(): string {
+    return new Date().toLocaleString();
 }

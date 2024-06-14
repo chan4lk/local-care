@@ -1,7 +1,7 @@
 {
   "name": "local-care",
   "productName": "local-care",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "Local care",
   "main": ".vite/build/main.js",
   "scripts": {
@@ -50,6 +50,8 @@
     "electron-squirrel-startup": "^1.0.0",
     "esbuild": "^0.21.4",
     "formik": "^2.4.6",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.45",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
