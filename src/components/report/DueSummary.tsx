@@ -3,6 +3,7 @@ import {
   ITransaction,
 } from "../../types/electron-api";
 import { ReportHeader } from "./ReportHeader";
+import { formatDate } from "../../database/helper";
 
 interface DueSummaryProps {
   transactions: ITransaction[];
@@ -10,11 +11,6 @@ interface DueSummaryProps {
 }
 
 const DueSummary: React.FC<DueSummaryProps> = ({ transactions, title }) => {
-  const mediumTime = new Intl.DateTimeFormat("en", {
-    timeStyle: "short",
-    dateStyle: "long",
-  });
-
   return (
     <div className="overflow-x-auto mt-8 mx-4">
       <ReportHeader title={title}/>
@@ -47,7 +43,7 @@ const DueSummary: React.FC<DueSummaryProps> = ({ transactions, title }) => {
                   </td>
                  
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                    {mediumTime.format(new Date(transaction.updatedAt))}
+                    {formatDate(transaction.updatedAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
                   Rs. {transaction.total.toFixed(2)}
