@@ -102,8 +102,8 @@ export default class Database {
             })
             .select([
                 'transaction.id AS id',
-                'transaction.createdAt AS createdAt',
-                'transaction.updatedAt AS updatedAt',
+                "datetime(transaction.createdAt, 'localtime') AS createdAt",
+                "datetime(transaction.updatedAt, 'localtime') AS updatedAt",
                 'transaction.description AS description',
                 'transaction.status AS status',
                 'transaction.amount AS amount',
@@ -124,8 +124,8 @@ export default class Database {
             .where('transaction.status = :status', { status: ITransactionStatus.Pending })
             .select([
                 'transaction.id AS id',
-                'transaction.createdAt AS createdAt',
-                'transaction.updatedAt AS updatedAt',
+                "datetime(transaction.createdAt, 'localtime') AS createdAt",
+                "datetime(transaction.updatedAt, 'localtime') AS updatedAt",
                 'transaction.description AS description',
                 'transaction.status AS status',
                 'transaction.amount AS amount',

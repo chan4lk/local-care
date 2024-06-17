@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import moment from 'moment-timezone';
 import {
   ITransaction,
   ITransactionStatus,
   PaymentMethod,
 } from "../../types/electron-api";
 import { ReportHeader } from "./ReportHeader";
+import { formatDate } from "../../database/helper";
 
 interface DailySummaryProps {
   transactions: ITransaction[];
@@ -34,9 +34,6 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions, title }) => {
 
   // Calculate total of all payments
   const totalAll = totalcash + totalcard;
-
-  // Get current date and time in Sri Lanka timezone
-  const currentDateTime = moment().tz('Asia/Colombo').format('YYYY-MM-DD HH:mm:ss');
 
   return (
     <div className="overflow-x-auto mt-8 mx-4">
@@ -72,7 +69,7 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions, title }) => {
                     {transaction.paymentMethod}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                    {currentDateTime} {/* Display current datetime in Sri Lanka */}
+                    {formatDate(transaction.createdAt)} 
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
                     Rs. {totalPaid.toFixed(2)}

@@ -14,6 +14,11 @@ export function calculateTotalPaid(patient: IPatient){
         .reduce((sum, current) => sum + current, 0);
 }
 
-export function getCurrentDateTime(): string {
-    return new Date().toLocaleString();
+export function formatDate(dateString: string): string {
+    const mediumTime = new Intl.DateTimeFormat("en", {
+        timeStyle: "short",
+        dateStyle: "long",
+      });
+    const time = mediumTime.format(new Date(dateString));
+    return time;
 }
