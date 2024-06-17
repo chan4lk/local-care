@@ -49,11 +49,11 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
           </div>
 
           <table className="min-w-full border-collapse text-xs">
-            <thead className="bg-gray-100">
+            <thead className="bg-white">
               <tr>
                 <th className="text-left p-1 border-dashed border-b border-gray-300">ITEM</th>
                 <th className="text-left p-1 border-dashed border-b border-gray-300">QTY</th>
-                <th className="text-right p-1 border-dashed border-b border-gray-300">AMOUNT</th>
+                <th className="text-left p-1 border-dashed border-b border-gray-300">AMOUNT</th>
               </tr>
             </thead>
             <tbody className="bg-white">
@@ -62,29 +62,29 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
                   {values.treatment}
                 </td>
                 <td className="text-left px-1 py-1 border-dashed border-b border-gray-300">1</td>
-                <td className="text-right px-1 py-1 border-dashed border-b border-gray-300">
+                <td className="text-left px-1 py-1 border-dashed border-b border-gray-300 font-mono tabular-nums">
                   {formatNumberWithCommas(parseFloat(values.total_amount || '0'))}
                 </td>
               </tr>
               <tr>
                 <td className="px-1 p-0"></td>
                 <td className="px-1 p-0 font-bold">TOTAL (LKR)</td>
-                <td className="px-1 p-0 text-right">{formatNumberWithCommas(parseFloat(values.total_amount || '0'))}</td>
+                <td className="px-1 p-0 text-left font-mono tabular-nums">{formatNumberWithCommas(parseFloat(values.total_amount || '0'))}</td>
               </tr>
               <tr>
                 <td className="px-1 p-0 border-dashed border-t border-white"></td>
                 <td className="px-1 p-0 font-bold border-dashed border-t border-white whitespace-nowrap">PREVIOUS PAYMENTS</td>
-                <td className="px-1 p-0 text-right border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.previous_paid || '0'))}</td>
+                <td className="px-1 p-0 text-left font-mono tabular-nums border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.previous_paid || '0'))}</td>
               </tr>
               <tr>
                 <td className="px-1 p-0 border-dashed border-t border-white"></td>
                 <td className="px-1 p-0 font-bold border-dashed border-t border-white">PAID AMOUNT</td>
-                <td className="px-1 p-0 text-right border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.paid_amount || '0'))}</td>
+                <td className="px-1 p-0 text-left font-mono tabular-nums border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.paid_amount || '0'))}</td>
               </tr>
               <tr>
                 <td className="px-1 p-0 border-dashed border-t border-white"></td>
                 <td className="px-1 p-0 font-bold border-dashed border-t border-white">DUE AMOUNT</td>
-                <td className="px-1 p-0 text-right border-dashed border-t border-white">
+                <td className="px-1 p-0 text-left font-mono tabular-nums border-dashed border-t border-white">
                   {formatNumberWithCommas(
                     parseFloat(values.total_amount || '0') -
                     parseFloat(values.previous_paid || '0') -
