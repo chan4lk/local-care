@@ -25,8 +25,8 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
     return (
       <div
         ref={ref}
-        className="p-2 text-[10px]"
-        style={{ width: '10cm', height: '10.1cm', marginTop: '3cm', marginLeft: '1cm', marginRight: '0.2cm' }}
+        className="p-2 text-[12px]"
+        style={{ width: '10cm', height: '10.1cm', marginTop: '3cm', marginLeft: '0cm', marginRight: '0.2cm' }}
       >
         <div className="border-dashed border-2 border-gray-200 p-2 rounded-md">
           <div className="mb-2">
