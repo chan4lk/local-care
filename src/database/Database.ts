@@ -79,17 +79,34 @@ export default class Database {
 
     public async fetchTransactionsByDate({ start, end }: { start: Date, end: Date }): Promise<ITransaction[]> {
         const transactionRepository = this.connection.getRepository(Transaction);
+<<<<<<< HEAD
         
         const startDate = new Date(start.getTime()); // Creates a new Date object representing the current date and time
+=======
+
+        const startDate = new Date(); // Creates a new Date object representing the current date and time
+>>>>>>> main
         startDate.setHours(0);
         startDate.setMinutes(0);
         startDate.setSeconds(0);
         
+<<<<<<< HEAD
         const endDate = new Date(end.getTime()); // Creates a new Date object with the same date and time as startDate
         endDate.setHours(23); // Sets the time to 23:59:59 for the same day
         endDate.setMinutes(59);
         endDate.setSeconds(59);
         console.log("report", startDate, endDate);
+=======
+        const endDate = new Date(startDate); // Creates a new Date object with the same date and time as startDate
+        endDate.setHours(23); // Sets the time to 23:59:59 for the same day
+        endDate.setMinutes(59);
+        endDate.setSeconds(59);
+        
+        const currentDate = new Date(); // Current date and time
+        const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); // First day of the current month
+        const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0); // Last day of the current month
+        
+>>>>>>> main
         
         return await transactionRepository
             .createQueryBuilder('transaction')
@@ -108,6 +125,7 @@ export default class Database {
                 'transaction.status AS status',
                 'transaction.amount AS amount',
                 'transaction.paymentMethod AS paymentMethod',
+<<<<<<< HEAD
                 'patient.fullname AS name', // alias fullname as name
                 'patient.mobile AS mobile', // alias mobile as mobile
             ])
@@ -131,6 +149,8 @@ export default class Database {
                 'transaction.amount AS amount',
                 'transaction.paymentMethod AS paymentMethod',
                 'invoice.total AS total',
+=======
+>>>>>>> main
                 'patient.fullname AS name', // alias fullname as name
                 'patient.mobile AS mobile', // alias mobile as mobile
             ])

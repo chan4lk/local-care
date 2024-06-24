@@ -6,16 +6,34 @@ import { validationSchema } from "./Schema";
 import { Back } from "./BackButton";
 import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-api";
 import BillFormat from './BillFormat';
+<<<<<<< HEAD
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { GenerateReferenceNumber } from '../database/helper';
+=======
+import { toast, ToastContainer } from "react-toastify"; // Import toast and ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Import toastify CSS
+
+interface FormValues {
+  fullname: string;
+  mobile: string;
+  treatment: string;
+  total_amount: string;
+  paid_amount: string;
+  payment_type: string;
+  previous_paid?: string;
+}
+>>>>>>> main
 
 export const NewPatient = () => {
   const printRef = useRef(null);
   const [patientData, setPatientData] = useState(null);
   const [patients, setPatients] = useState<IPatient[]>([]);
+<<<<<<< HEAD
   const [disableSubmit, setDisableSubmit] = useState(false);
 
+=======
+>>>>>>> main
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
   } as ReactToPrintProps);
@@ -25,12 +43,20 @@ export const NewPatient = () => {
   };
 
   const ClearButton = () => {
+<<<<<<< HEAD
     const { resetForm } = useFormikContext();
 
     const handleClick = () => {
       resetForm();
       clearForm();
       setDisableSubmit(false);
+=======
+    const { resetForm } = useFormikContext(); // Get resetForm function from Formik context
+
+    const handleClick = () => {
+      resetForm(); // Reset form values
+      clearForm(); // Clear patient data
+>>>>>>> main
     };
 
     return (
@@ -48,7 +74,11 @@ export const NewPatient = () => {
     <div className="container mx-auto mt-4">
       <Back />
       <div className="flex flex-wrap justify-center text-center">
+<<<<<<< HEAD
         <div className="w-1/2 p-4 bg-gray-100 rounded-lg shadow-md hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 mb-8">
+=======
+      <div className="w-1/2 p-4 bg-white-100 rounded-lg hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-400 mb-8">
+>>>>>>> main
           <h2 className="text-lg font-bold">New Patient</h2>
         </div>
       </div>
@@ -65,9 +95,32 @@ export const NewPatient = () => {
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
+<<<<<<< HEAD
           if(disableSubmit) return;
           
           setDisableSubmit(true);
+=======
+          // Check if the patient already exists
+          const duplicatePatient = patients.find(
+            (patient) =>
+              patient.fullname === values.fullname &&
+              patient.mobile === values.mobile
+          );
+
+          if (duplicatePatient) {
+            toast.error("Patient already submitted!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            return; // Exit the function if a duplicate is found
+          }
+
+>>>>>>> main
           const pendingAmount =
             parseFloat(values.total_amount || "0") -
             parseFloat(values.paid_amount || "0");
@@ -99,25 +152,45 @@ export const NewPatient = () => {
               ],
             },
           } as IPatient;
+<<<<<<< HEAD
 
           patient.invoice.transactions = patient.invoice.transactions.filter(t => !(t.amount === 0 && t.status === ITransactionStatus.Paid));
+=======
+          patient.invoice.transactions = patient.invoice.transactions.filter(t => !(t.amount == 0 && t.status == ITransactionStatus.Paid))
+>>>>>>> main
           const insert = await window.electronAPI.insertPatient(patient);
 
           const allPatients = await window.electronAPI.fetchAll();
+<<<<<<< HEAD
           setPatients(allPatients);
+=======
+          console.table(allPatients);
+          setPatients(allPatients); // Update the patients state with all patients
+>>>>>>> main
 
           setPatientData({
             patient: {
               fullname: values.fullname,
               mobile: values.mobile,
+<<<<<<< HEAD
               patientRegistrationId: "", // This will need to be fetched properly in real application
               referenceNumber: referenceNumber,
+=======
+              patientRegistrationId: "", // Example ID
+              referenceNumber: "", // Example bill number
+>>>>>>> main
             },
             values,
           });
 
+<<<<<<< HEAD
           toast.success("Bill submitted successfully!", {
             position: "top-center",
+=======
+          // Show toast notification after form submission
+          toast.success("Bill submitted successfully!", {
+            position: "top-center", // Use a string for the position
+>>>>>>> main
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
@@ -182,13 +255,21 @@ export const NewPatient = () => {
                 id="payment_type"
                 name="payment_type"
                 value={values.payment_type}
+<<<<<<< HEAD
                 disabled={disableSubmit}
+=======
+>>>>>>> main
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
               >
+<<<<<<< HEAD
                 <option value="cash">Cash</option>
                 <option value="card">Card</option>
+=======
+                <option value="cash">cash</option>
+                <option value="card">card</option>
+>>>>>>> main
               </select>
             </div>
             <div className="flex items-center justify-between">
@@ -208,23 +289,42 @@ export const NewPatient = () => {
                   {(
                     parseFloat(values.total_amount || "0") -
                     parseFloat(values.paid_amount || "0")
+<<<<<<< HEAD
                   ).toLocaleString()}
+=======
+                  ).toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  })}
+>>>>>>> main
                 </span>
               </div>
             </div>
             <div className="flex items-center justify-between space-x-4">
               <button
                 type="submit"
+<<<<<<< HEAD
                 disabled={isSubmitting || disableSubmit}
                 className={`w-full p-4 rounded-lg ${disableSubmit ? 'bg-blue-50' : 'bg-blue-100 shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800'} font-bold mr-4`}
+=======
+                disabled={isSubmitting}
+                className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+>>>>>>> main
               >
                 Submit
               </button>
               {patientData && (
                 <button
+<<<<<<< HEAD
                   type="button"
                   id="print-bill-button"
                   onClick={handlePrint}
+=======
+                  id="print-bill-button"
+                  onClick={() => {
+                    handlePrint();
+                  }}
+>>>>>>> main
                   className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
                 >
                   Print Bill
@@ -240,8 +340,13 @@ export const NewPatient = () => {
           <BillFormat ref={printRef} patient={patientData.patient} values={patientData.values} />
         </div>
       )}
+<<<<<<< HEAD
       <ToastContainer />
     </div>
+=======
+      <ToastContainer /> {/* Add ToastContainer to render toast notifications */}
+      </div>
+>>>>>>> main
   );
 };
 

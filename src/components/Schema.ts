@@ -17,6 +17,7 @@ export const validationSchema = Yup.object().shape({
     .min(0, "Amount must be positive")
     .max(Yup.ref("total_amount"), "Amount must not exceed the total amount")
     
+<<<<<<< HEAD
 });
 
 export const validationSchemaExisting = Yup.object().shape({
@@ -37,4 +38,6 @@ export const validationSchemaExisting = Yup.object().shape({
     .min(1, "Amount must be positive")
     .max(Yup.ref("total_amount"), "Amount must not exceed the total amount")
     
+=======
+>>>>>>> main
 });

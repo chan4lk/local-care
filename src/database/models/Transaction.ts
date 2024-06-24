@@ -8,6 +8,8 @@ export default class Transaction extends Auditable {
     @PrimaryGeneratedColumn()
     id?: number;
 
+    @Column({ type: 'varchar', length: 255 })  // explicitly specifying the type
+
     @Column()
     description?: string;
 

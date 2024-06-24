@@ -39,8 +39,15 @@ export interface ITransaction {
     mobile?:string;
     paymentMethod: PaymentMethod;
     createdAt?: string; // Add the 'timestamp' property
+<<<<<<< HEAD
     updatedAt?: string; // Add the 'timestamp' property
     
+=======
+    date: string; // Assuming date is stored as a string
+
+
+
+>>>>>>> main
 }
 
 export interface ElectronAPI {
@@ -48,5 +55,8 @@ export interface ElectronAPI {
     fetchAll: () =>  Promise<IPatient[]>
     search: ({keyword}: {keyword:string}) =>  Promise<IPatient[]>
     fetchPaidByDateRange: (args: { start: Date, end: Date }) =>  Promise<ITransaction[]>
+<<<<<<< HEAD
     fetchPendingTransactions: () =>  Promise<ITransaction[]>
+=======
+>>>>>>> main
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { useState } from "react";
+>>>>>>> main
 import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
