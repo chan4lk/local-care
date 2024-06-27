@@ -58,7 +58,7 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
             </thead>
             <tbody className="bg-white">
               <tr>
-                <td className="text-left px-1 py-1 border-dashed border-b border-gray-300 whitespace-nowrap">
+                <td className="text-left px-1 py-1 border-dashed border-b border-gray-300 whitespace-normal break-words" style={{ maxWidth: '100px' }}>
                   {values.treatment}
                 </td>
                 <td className="text-left px-1 py-1 border-dashed border-b border-gray-300">1</td>
