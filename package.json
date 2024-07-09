@@ -1,7 +1,7 @@
 {
   "name": "local-care",
   "productName": "local-care",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Local care",
   "main": ".vite/build/main.js",
   "scripts": {
