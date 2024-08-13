@@ -52,13 +52,15 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
             <thead className="bg-white">
               <tr>
                 <th className="text-left p-1 border-dashed border-b border-gray-300">ITEM</th>
+                <th className="text-left p-1 border-dashed border-b border-gray-300"></th>
+                <th className="text-left p-1 border-dashed border-b border-gray-300"></th>
                 <th className="text-left p-1 border-dashed border-b border-gray-300">QTY</th>
                 <th className="text-left p-1 border-dashed border-b border-gray-300">AMOUNT(LKR)</th>
               </tr>
             </thead>
             <tbody className="bg-white">
               <tr>
-                <td className="text-left px-1 py-1 border-dashed border-b border-gray-300 whitespace-normal break-words" style={{ maxWidth: '100px' }}>
+                <td colSpan={3} className="text-[10px] text-left px-1 py-1 border-dashed border-b border-gray-300 whitespace-normal break-words">
                   {values.treatment}
                 </td>
                 <td className="text-left px-1 py-1 border-dashed border-b border-gray-300">1</td>
@@ -66,23 +68,23 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
                   {formatNumberWithCommas(parseFloat(values.total_amount || '0'))}
                 </td>
               </tr>
+            </tbody>
+          </table>
+          <table className="min-w-full border-collapse text-xxs">
+            <tbody className="bg-white">
               <tr>
-                <td className="px-1 p-0"></td>
                 <td className="px-1 p-0 font-bold">TOTAL</td>
                 <td className="px-1 p-0 text-right font-mono tabular-nums">{formatNumberWithCommas(parseFloat(values.total_amount || '0'))}</td>
               </tr>
               <tr>
-                <td className="px-1 p-0 border-dashed border-t border-white"></td>
                 <td className="px-1 p-0 font-bold border-dashed border-t border-white whitespace-nowrap">PREVIOUS PAYMENTS</td>
                 <td className="px-1 p-0 text-right font-mono tabular-nums border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.previous_paid || '0'))}</td>
               </tr>
               <tr>
-                <td className="px-1 p-0 border-dashed border-t border-white"></td>
                 <td className="px-1 p-0 font-bold border-dashed border-t border-white">PAID AMOUNT</td>
                 <td className="px-1 p-0 text-right font-mono tabular-nums border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.paid_amount || '0'))}</td>
               </tr>
               <tr>
-                <td className="px-1 p-0 border-dashed border-t border-white"></td>
                 <td className="px-1 p-0 font-bold border-dashed border-t border-white">DUE AMOUNT</td>
                 <td className="px-1 p-0 text-right font-mono tabular-nums border-dashed border-t border-white">
                   {formatNumberWithCommas(
