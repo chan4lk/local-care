@@ -8,7 +8,7 @@ import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-a
 import BillFormat from './BillFormat';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {GenerateReferenceNumber} from '../database/helper'; // Import the Invoice class
+import { GenerateReferenceNumber } from '../database/helper';
 
 export const NewPatient = () => {
   const printRef = useRef(null);
@@ -59,6 +59,7 @@ export const NewPatient = () => {
           paid_amount: "",
           payment_type: "cash",
           previous_paid: "",
+          discount_percentage: "",
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
@@ -81,9 +82,12 @@ export const NewPatient = () => {
             return;
           }
 
-          const pendingAmount =
-            parseFloat(values.total_amount || "0") -
-            parseFloat(values.paid_amount || "0");
+          const totalAmount = parseFloat(values.total_amount || "0");
+          const discountPercentage = parseFloat(values.discount_percentage || "0");
+          const discount = (totalAmount * discountPercentage) / 100;
+          const netAmount = totalAmount - discount;
+          const paidAmount = parseFloat(values.paid_amount || "0");
+          const pendingAmount = netAmount - paidAmount;
 
           const referenceNumber = GenerateReferenceNumber();
 
@@ -91,10 +95,10 @@ export const NewPatient = () => {
             fullname: values.fullname,
             mobile: values.mobile,
             treatment: values.treatment,
-            patientRegistrationId: "", // Add this to meet IPatient type requirement
+            patientRegistrationId: "",
             invoice: {
               description: values.fullname,
-              total: parseFloat(values.total_amount || "0"),
+              total: totalAmount,
               referenceNumber: referenceNumber,
               transactions: [
                 {
@@ -105,7 +109,7 @@ export const NewPatient = () => {
                 },
                 {
                   status: ITransactionStatus.Paid,
-                  amount: parseFloat(values.paid_amount || "0"),
+                  amount: paidAmount,
                   description: `Paid Amount (${values.payment_type})`,
                   paymentMethod: values.payment_type,
                 },
@@ -123,10 +127,14 @@ export const NewPatient = () => {
             patient: {
               fullname: values.fullname,
               mobile: values.mobile,
-              patientRegistrationId: "", // This will need to be fetched properly in real application
+              patientRegistrationId: "",
               referenceNumber: referenceNumber,
             },
-            values,
+            values: {
+              ...values,
+              discount: discount.toFixed(2),
+              net_amount: netAmount.toFixed(2),
+            },
           });
 
           toast.success("Bill submitted successfully!", {
@@ -179,6 +187,15 @@ export const NewPatient = () => {
                 field="paid_amount"
               />
             </div>
+            <div className="flex items-center justify-between">
+              <SimpleInput
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                values={values}
+                label="Discount (%)"
+                field="discount_percentage"
+              />
+            </div>
             <div className="flex flex-col">
               <label
                 htmlFor="payment_type"
@@ -213,7 +230,8 @@ export const NewPatient = () => {
                 >
                   Rs.
                   {(
-                    parseFloat(values.total_amount || "0") -
+                    parseFloat(values.total_amount || "0") *
+                    (1 - parseFloat(values.discount_percentage || "0") / 100) -
                     parseFloat(values.paid_amount || "0")
                   ).toLocaleString()}
                 </span>
