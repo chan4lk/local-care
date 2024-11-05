@@ -14,8 +14,6 @@ export const NewPatient = () => {
   const printRef = useRef(null);
   const [patientData, setPatientData] = useState(null);
   const [patients, setPatients] = useState<IPatient[]>([]);
-  const [disableSubmit, setDisableSubmit] = useState(false);
-
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
   } as ReactToPrintProps);
@@ -30,7 +28,6 @@ export const NewPatient = () => {
     const handleClick = () => {
       resetForm();
       clearForm();
-      setDisableSubmit(false);
     };
 
     return (
@@ -62,15 +59,35 @@ export const NewPatient = () => {
           paid_amount: "",
           payment_type: "cash",
           previous_paid: "",
+          discount_percentage: "",
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
-          if(disableSubmit) return;
-          
-          setDisableSubmit(true);
-          const pendingAmount =
-            parseFloat(values.total_amount || "0") -
-            parseFloat(values.paid_amount || "0");
+          const duplicatePatient = patients.find(
+            (patient) =>
+              patient.fullname === values.fullname &&
+              patient.mobile === values.mobile
+          );
+
+          if (duplicatePatient) {
+            toast.error("Patient already submitted!", {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            return;
+          }
+
+          const totalAmount = parseFloat(values.total_amount || "0");
+          const discountPercentage = parseFloat(values.discount_percentage || "0");
+          const discount = (totalAmount * discountPercentage) / 100;
+          const netAmount = totalAmount - discount;
+          const paidAmount = parseFloat(values.paid_amount || "0");
+          const pendingAmount = netAmount - paidAmount;
 
           const referenceNumber = GenerateReferenceNumber();
 
@@ -78,10 +95,10 @@ export const NewPatient = () => {
             fullname: values.fullname,
             mobile: values.mobile,
             treatment: values.treatment,
-            patientRegistrationId: "", // Add this to meet IPatient type requirement
+            patientRegistrationId: "",
             invoice: {
               description: values.fullname,
-              total: parseFloat(values.total_amount || "0"),
+              total: totalAmount,
               referenceNumber: referenceNumber,
               transactions: [
                 {
@@ -92,7 +109,7 @@ export const NewPatient = () => {
                 },
                 {
                   status: ITransactionStatus.Paid,
-                  amount: parseFloat(values.paid_amount || "0"),
+                  amount: paidAmount,
                   description: `Paid Amount (${values.payment_type})`,
                   paymentMethod: values.payment_type,
                 },
@@ -110,10 +127,14 @@ export const NewPatient = () => {
             patient: {
               fullname: values.fullname,
               mobile: values.mobile,
-              patientRegistrationId: "", // This will need to be fetched properly in real application
+              patientRegistrationId: "",
               referenceNumber: referenceNumber,
             },
-            values,
+            values: {
+              ...values,
+              discount: discount.toFixed(2),
+              net_amount: netAmount.toFixed(2),
+            },
           });
 
           toast.success("Bill submitted successfully!", {
@@ -133,7 +154,6 @@ export const NewPatient = () => {
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
-              disabled={disableSubmit}
               label="Full Name"
               field="fullname"
             />
@@ -141,7 +161,6 @@ export const NewPatient = () => {
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
-              disabled={disableSubmit}
               label="Mobile"
               field="mobile"
             />
@@ -149,7 +168,6 @@ export const NewPatient = () => {
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
-              disabled={disableSubmit}
               label="Treatment"
               field="treatment"
             />
@@ -158,7 +176,6 @@ export const NewPatient = () => {
                 handleBlur={handleBlur}
                 handleChange={handleChange}
                 values={values}
-                disabled={disableSubmit}
                 label="Total Amount"
                 field="total_amount"
               />
@@ -166,9 +183,17 @@ export const NewPatient = () => {
                 handleBlur={handleBlur}
                 handleChange={handleChange}
                 values={values}
-                disabled={disableSubmit}
                 label="Amount Paid"
                 field="paid_amount"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <SimpleInput
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                values={values}
+                label="Discount (%)"
+                field="discount_percentage"
               />
             </div>
             <div className="flex flex-col">
@@ -182,7 +207,6 @@ export const NewPatient = () => {
                 id="payment_type"
                 name="payment_type"
                 value={values.payment_type}
-                disabled={disableSubmit}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
@@ -193,7 +217,7 @@ export const NewPatient = () => {
             </div>
             <div className="flex items-center justify-between">
               <div></div>
-              <div className ="flex items-center">
+              <div className="flex items-center">
                 <label
                   htmlFor="amount_due"
                   className="block text-sm font-medium text-gray-700 mr-4"
@@ -206,7 +230,8 @@ export const NewPatient = () => {
                 >
                   Rs.
                   {(
-                    parseFloat(values.total_amount || "0") -
+                    parseFloat(values.total_amount || "0") *
+                    (1 - parseFloat(values.discount_percentage || "0") / 100) -
                     parseFloat(values.paid_amount || "0")
                   ).toLocaleString()}
                 </span>
@@ -215,16 +240,17 @@ export const NewPatient = () => {
             <div className="flex items-center justify-between space-x-4">
               <button
                 type="submit"
-                disabled={isSubmitting || disableSubmit}
-                className={`w-full p-4 rounded-lg ${disableSubmit ? 'bg-blue-50' : 'bg-blue-100 shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800'} font-bold mr-4`}
+                disabled={isSubmitting}
+                className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
               >
                 Submit
               </button>
               {patientData && (
                 <button
-                  type="button"
                   id="print-bill-button"
-                  onClick={handlePrint}
+                  onClick={() => {
+                    handlePrint();
+                  }}
                   className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
                 >
                   Print Bill
