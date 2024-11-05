@@ -102,11 +102,35 @@ export default class Database {
             })
             .select([
                 'transaction.id AS id',
-                'transaction.createdAt AS createdAt',
+                "datetime(transaction.createdAt, 'localtime') AS createdAt",
+                "datetime(transaction.updatedAt, 'localtime') AS updatedAt",
                 'transaction.description AS description',
                 'transaction.status AS status',
                 'transaction.amount AS amount',
                 'transaction.paymentMethod AS paymentMethod',
+                'patient.fullname AS name', // alias fullname as name
+                'patient.mobile AS mobile', // alias mobile as mobile
+            ])
+            .getRawMany();
+    }
+
+    public async fetchPendingTransactions(): Promise<ITransaction[]> {
+        const transactionRepository = this.connection.getRepository(Transaction);
+      
+        return await transactionRepository
+            .createQueryBuilder('transaction')
+            .innerJoin('transaction.invoice', 'invoice')
+            .innerJoin('invoice.patient', 'patient')  // <--- join invoice.patient to get patient data
+            .where('transaction.status = :status', { status: ITransactionStatus.Pending })
+            .select([
+                'transaction.id AS id',
+                "datetime(transaction.createdAt, 'localtime') AS createdAt",
+                "datetime(transaction.updatedAt, 'localtime') AS updatedAt",
+                'transaction.description AS description',
+                'transaction.status AS status',
+                'transaction.amount AS amount',
+                'transaction.paymentMethod AS paymentMethod',
+                'invoice.total AS total',
                 'patient.fullname AS name', // alias fullname as name
                 'patient.mobile AS mobile', // alias mobile as mobile
             ])

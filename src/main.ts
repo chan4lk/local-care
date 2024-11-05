@@ -20,6 +20,7 @@ const createWindow = () => {
   ipcMain.removeHandler('database:search');
   ipcMain.removeHandler('database:fetchall');
   ipcMain.removeHandler('database:fetch:paid');
+  ipcMain.removeHandler('database:fetch:pending');
 
 
   ipcMain.handle('database:insert', async (event, arg) => {
@@ -38,6 +39,11 @@ const createWindow = () => {
     return await database.fetchTransactionsByDate(arg);
   })
 
+  ipcMain.handle('database:fetch:pending', async (event, arg) => {
+    return await database.fetchPendingTransactions();
+  })
+
+  
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,

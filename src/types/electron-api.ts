@@ -34,10 +34,13 @@ export interface ITransaction {
     description?: string;
     amount: number;
     status: ITransactionStatus;
+    total?: number; // Add this line
     name?:string;
     mobile?:string;
     paymentMethod: PaymentMethod;
-    createdAt?: Date; // Add the 'timestamp' property
+    createdAt?: string; // Add the 'timestamp' property
+    updatedAt?: string; // Add the 'timestamp' property
+    
 }
 
 export interface ElectronAPI {
@@ -45,4 +48,5 @@ export interface ElectronAPI {
     fetchAll: () =>  Promise<IPatient[]>
     search: ({keyword}: {keyword:string}) =>  Promise<IPatient[]>
     fetchPaidByDateRange: (args: { start: Date, end: Date }) =>  Promise<ITransaction[]>
+    fetchPendingTransactions: () =>  Promise<ITransaction[]>
 }

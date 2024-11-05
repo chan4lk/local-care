@@ -10,7 +10,7 @@ interface SimpleInputProps {
   disabled?: boolean; // Add disabled prop
 }
 
-export const SimpleInput: React.FC<SimpleInputProps> = ({label, handleBlur, handleChange, values, field}) => {
+export const SimpleInput: React.FC<SimpleInputProps> = ({label, handleBlur, handleChange, values, field, disabled}) => {
     return <div>
     <label
       htmlFor={field}
@@ -21,6 +21,7 @@ export const SimpleInput: React.FC<SimpleInputProps> = ({label, handleBlur, hand
     <input
       name={field}
       id={field}
+      disabled={disabled}
       onChange={handleChange}
       onBlur={handleBlur}
       value={values[field]}

@@ -8,12 +8,14 @@ import { IPatient, ITransactionStatus, PaymentMethod } from "../types/electron-a
 import BillFormat from './BillFormat';
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {GenerateReferenceNumber} from '../database/helper'; // Import the Invoice class
+import { GenerateReferenceNumber } from '../database/helper';
 
 export const NewPatient = () => {
   const printRef = useRef(null);
   const [patientData, setPatientData] = useState(null);
   const [patients, setPatients] = useState<IPatient[]>([]);
+  const [disableSubmit, setDisableSubmit] = useState(false);
+
   const handlePrint = useReactToPrint({
     content: () => printRef.current,
   } as ReactToPrintProps);
@@ -28,6 +30,7 @@ export const NewPatient = () => {
     const handleClick = () => {
       resetForm();
       clearForm();
+      setDisableSubmit(false);
     };
 
     return (
@@ -62,25 +65,9 @@ export const NewPatient = () => {
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
-          const duplicatePatient = patients.find(
-            (patient) =>
-              patient.fullname === values.fullname &&
-              patient.mobile === values.mobile
-          );
-
-          if (duplicatePatient) {
-            toast.error("Patient already submitted!", {
-              position: "top-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
-            return;
-          }
-
+          if(disableSubmit) return;
+          
+          setDisableSubmit(true);
           const pendingAmount =
             parseFloat(values.total_amount || "0") -
             parseFloat(values.paid_amount || "0");
@@ -146,6 +133,7 @@ export const NewPatient = () => {
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
+              disabled={disableSubmit}
               label="Full Name"
               field="fullname"
             />
@@ -153,6 +141,7 @@ export const NewPatient = () => {
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
+              disabled={disableSubmit}
               label="Mobile"
               field="mobile"
             />
@@ -160,6 +149,7 @@ export const NewPatient = () => {
               handleBlur={handleBlur}
               handleChange={handleChange}
               values={values}
+              disabled={disableSubmit}
               label="Treatment"
               field="treatment"
             />
@@ -168,6 +158,7 @@ export const NewPatient = () => {
                 handleBlur={handleBlur}
                 handleChange={handleChange}
                 values={values}
+                disabled={disableSubmit}
                 label="Total Amount"
                 field="total_amount"
               />
@@ -175,6 +166,7 @@ export const NewPatient = () => {
                 handleBlur={handleBlur}
                 handleChange={handleChange}
                 values={values}
+                disabled={disableSubmit}
                 label="Amount Paid"
                 field="paid_amount"
               />
@@ -190,6 +182,7 @@ export const NewPatient = () => {
                 id="payment_type"
                 name="payment_type"
                 value={values.payment_type}
+                disabled={disableSubmit}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
@@ -200,7 +193,7 @@ export const NewPatient = () => {
             </div>
             <div className="flex items-center justify-between">
               <div></div>
-              <div className="flex items-center">
+              <div className ="flex items-center">
                 <label
                   htmlFor="amount_due"
                   className="block text-sm font-medium text-gray-700 mr-4"
@@ -222,17 +215,16 @@ export const NewPatient = () => {
             <div className="flex items-center justify-between space-x-4">
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+                disabled={isSubmitting || disableSubmit}
+                className={`w-full p-4 rounded-lg ${disableSubmit ? 'bg-blue-50' : 'bg-blue-100 shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800'} font-bold mr-4`}
               >
                 Submit
               </button>
               {patientData && (
                 <button
+                  type="button"
                   id="print-bill-button"
-                  onClick={() => {
-                    handlePrint();
-                  }}
+                  onClick={handlePrint}
                   className="w-full p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
                 >
                   Print Bill

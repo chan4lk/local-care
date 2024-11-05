@@ -3,13 +3,16 @@ import {
   ITransaction,
   ITransactionStatus,
   PaymentMethod,
-} from "../types/electron-api";
+} from "../../types/electron-api";
+import { ReportHeader } from "./ReportHeader";
+import { formatDate } from "../../database/helper";
 
 interface DailySummaryProps {
   transactions: ITransaction[];
+  title: string;
 }
 
-const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
+const DailySummary: React.FC<DailySummaryProps> = ({ transactions, title }) => {
   const [totalcash, setTotalcash] = useState<number>(0);
   const [totalcard, setTotalcard] = useState<number>(0);
 
@@ -32,33 +35,10 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
   // Calculate total of all payments
   const totalAll = totalcash + totalcard;
 
-  const currentDate = new Date();
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-  const mediumTime = new Intl.DateTimeFormat("en", {
-    timeStyle: "short",
-    dateStyle: "long",
-  });
-  const formattedDate = currentDate.toLocaleDateString("en-US", options);
-
   return (
     <div className="overflow-x-auto mt-8 mx-4">
-      <div className="flex flex-wrap justify-center text-center">
-        <div className="w-full p-4 bg-blue-100 rounded-lg shadow-md hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 mb-8">
-          <h2 className="text-2xl font-bold">
-            Rosewood Dental & Medical Hospital
-          </h2>
-          <p className="text-sm">{formattedDate}</p>
-        </div>
-      </div>
-
+      <ReportHeader title={title}/>
       <div className="table-container">
-        {" "}
-        {/* Container for table and total payments */}
-        {/* Summary Table */}
         <table className="min-w-full divide-y divide-gray-200 mb-8 border border-gray-300">
           <thead className="bg-green-50">
             <tr>
@@ -78,7 +58,8 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {transactions.map((transaction, index) => {
-              const totalPaid = transaction.amount;
+              const totalPaid = transaction.amount ?? 0;
+
               return (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
@@ -88,7 +69,7 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
                     {transaction.paymentMethod}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border border-gray-300">
-                    {mediumTime.format(new Date(transaction.createdAt))}
+                    {formatDate(transaction.createdAt)} 
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right border border-gray-300">
                     Rs. {totalPaid.toFixed(2)}
@@ -96,30 +77,30 @@ const DailySummary: React.FC<DailySummaryProps> = ({ transactions }) => {
                 </tr>
               );
             })}
-            <tr>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
+            <tr className="hover:bg-gray-100 transition-colors">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
                 Total cash Payments:
               </td>
-              <td className="px-6   p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
                 Rs. {totalcash.toFixed(2)}
               </td>
             </tr>
-            <tr>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
+            <tr className="hover:bg-gray-100 transition-colors">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
                 Total card Payments:
               </td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
                 Rs. {totalcard.toFixed(2)}
               </td>
             </tr>
-            <tr>
+            <tr className="hover:bg-gray-100 transition-colors">
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white"></td>
-              <td className="px-6  p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
+              <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 border border-white font-bold">
                 Total All Payments:
               </td>
               <td className="px-6 p-0 whitespace-nowrap text-sm text-gray-500 text-right border border-white font-bold">
