@@ -77,21 +77,20 @@ export default class Database {
         });
     }
 
-    public async fetchTransactionsByDate({ start, end }: { start: Date, end: Date }): Promise<ITransaction[]> {
+    public async fetchTransactionsByDate({ start, end, mobile }: { start: Date, end: Date, mobile?: string }): Promise<ITransaction[]> {
         const transactionRepository = this.connection.getRepository(Transaction);
-        
+
         const startDate = new Date(start.getTime()); // Creates a new Date object representing the current date and time
         startDate.setHours(0);
         startDate.setMinutes(0);
         startDate.setSeconds(0);
-        
+
         const endDate = new Date(end.getTime()); // Creates a new Date object with the same date and time as startDate
         endDate.setHours(23); // Sets the time to 23:59:59 for the same day
         endDate.setMinutes(59);
         endDate.setSeconds(59);
-        console.log("report", startDate, endDate);
-        
-        return await transactionRepository
+        console.log("report", startDate, endDate, mobile);
+        let query = await transactionRepository
             .createQueryBuilder('transaction')
             .innerJoin('transaction.invoice', 'invoice')
             .innerJoin('invoice.patient', 'patient')  // <--- join invoice.patient to get patient data
@@ -99,7 +98,13 @@ export default class Database {
             .andWhere("transaction.createdAt BETWEEN :startDate AND :endDate", {
                 startDate,
                 endDate,
-            })
+            });
+
+        if (mobile) {
+            query = query.andWhere("patient.mobile = :mobile", { mobile })
+        }
+
+        return query
             .select([
                 'transaction.id AS id',
                 "datetime(transaction.createdAt, 'localtime') AS createdAt",
@@ -116,7 +121,7 @@ export default class Database {
 
     public async fetchPendingTransactions(): Promise<ITransaction[]> {
         const transactionRepository = this.connection.getRepository(Transaction);
-      
+
         return await transactionRepository
             .createQueryBuilder('transaction')
             .innerJoin('transaction.invoice', 'invoice')
