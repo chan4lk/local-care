@@ -13,7 +13,6 @@ import { GenerateReferenceNumber } from '../database/helper';
 export const NewPatient = () => {
   const printRef = useRef(null);
   const [patientData, setPatientData] = useState(null);
-  const [patients, setPatients] = useState<IPatient[]>([]);
   const [disableSubmit, setDisableSubmit] = useState(false);
 
   const handlePrint = useReactToPrint({
@@ -52,7 +51,7 @@ export const NewPatient = () => {
           <h2 className="text-lg font-bold">New Patient</h2>
         </div>
       </div>
-      
+
       <Formik
         initialValues={{
           fullname: "",
@@ -62,17 +61,18 @@ export const NewPatient = () => {
           paid_amount: "",
           payment_type: "cash",
           previous_paid: "",
+          discount: ""
         }}
         validationSchema={validationSchema}
-        onSubmit={async (values, { resetForm }) => {
-          if(disableSubmit) return;
-          
-          setDisableSubmit(true);
-          const pendingAmount =
-            parseFloat(values.total_amount || "0") -
-            parseFloat(values.paid_amount || "0");
+        onSubmit={async (values) => {
+          if (disableSubmit) return;
 
-          const referenceNumber = GenerateReferenceNumber();
+          setDisableSubmit(true);
+          const totalAmount = parseFloat(values.total_amount || "0");
+          const discount = parseFloat(values.discount || "0");
+          const netAmount = totalAmount - discount;
+          const paidAmount = parseFloat(values.paid_amount || "0");
+          const pendingAmount = netAmount - paidAmount;          const referenceNumber = GenerateReferenceNumber();
 
           const patient = {
             fullname: values.fullname,
@@ -81,7 +81,7 @@ export const NewPatient = () => {
             patientRegistrationId: "", // Add this to meet IPatient type requirement
             invoice: {
               description: values.fullname,
-              total: parseFloat(values.total_amount || "0"),
+              total: netAmount,
               referenceNumber: referenceNumber,
               transactions: [
                 {
@@ -103,9 +103,6 @@ export const NewPatient = () => {
           patient.invoice.transactions = patient.invoice.transactions.filter(t => !(t.amount === 0 && t.status === ITransactionStatus.Paid));
           const insert = await window.electronAPI.insertPatient(patient);
 
-          const allPatients = await window.electronAPI.fetchAll();
-          setPatients(allPatients);
-
           setPatientData({
             patient: {
               fullname: values.fullname,
@@ -113,7 +110,11 @@ export const NewPatient = () => {
               patientRegistrationId: "", // This will need to be fetched properly in real application
               referenceNumber: referenceNumber,
             },
-            values,
+            values: {
+              ...values,
+              discount: discount.toFixed(2),
+              net_amount: netAmount.toFixed(2),
+            },
           });
 
           toast.success("Bill submitted successfully!", {
@@ -167,33 +168,44 @@ export const NewPatient = () => {
                 handleChange={handleChange}
                 values={values}
                 disabled={disableSubmit}
+                label="Discount"
+                field="discount"
+              />
+
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col">
+                <label
+                  htmlFor="payment_type"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Payment Type
+                </label>
+                <select
+                  id="payment_type"
+                  name="payment_type"
+                  value={values.payment_type}
+                  disabled={disableSubmit}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
+                >
+                  <option value="cash">Cash</option>
+                  <option value="card">Card</option>
+                </select>
+              </div>
+              <SimpleInput
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                values={values}
+                disabled={disableSubmit}
                 label="Amount Paid"
                 field="paid_amount"
               />
             </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="payment_type"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Payment Type
-              </label>
-              <select
-                id="payment_type"
-                name="payment_type"
-                value={values.payment_type}
-                disabled={disableSubmit}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className="w-36 py-2 pl-3 pr-8 border border-gray-900 focus:outline-none focus:ring-blue-100 focus:border-blue-100 text-sm rounded-md"
-              >
-                <option value="cash">Cash</option>
-                <option value="card">Card</option>
-              </select>
-            </div>
             <div className="flex items-center justify-between">
               <div></div>
-              <div className ="flex items-center">
+              <div className="flex items-center">
                 <label
                   htmlFor="amount_due"
                   className="block text-sm font-medium text-gray-700 mr-4"
@@ -207,6 +219,7 @@ export const NewPatient = () => {
                   Rs.
                   {(
                     parseFloat(values.total_amount || "0") -
+                    parseFloat(values.discount || "0") -
                     parseFloat(values.paid_amount || "0")
                   ).toLocaleString()}
                 </span>

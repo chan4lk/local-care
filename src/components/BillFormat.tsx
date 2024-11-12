@@ -1,14 +1,18 @@
 import React from 'react';
 
 interface BillFormatProps {
-  patient: any;
-  values: {
+  patient: {
+    referenceNumber?: string;
     fullname: string;
+    patientRegistrationId?: string;
     mobile: string;
+  };
+  values: {
     treatment: string;
     total_amount: string;
     paid_amount: string;
     previous_paid: string;
+    discount?: string;
     referenceNumber: string;
   };
 }
@@ -21,6 +25,13 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
         maximumFractionDigits: 2,
       });
     };
+
+    const totalAmount = parseFloat(values.total_amount || '0');
+    const discount = parseFloat(values.discount || '0');
+    const netAmount = totalAmount - discount;
+    const previousPaid = parseFloat(values.previous_paid || '0');
+    const paidAmount = parseFloat(values.paid_amount || '0');
+    const dueAmount = netAmount - previousPaid - paidAmount;
 
     return (
       <div
@@ -77,6 +88,14 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
                 <td className="px-1 p-0 text-right font-mono tabular-nums">{formatNumberWithCommas(parseFloat(values.total_amount || '0'))}</td>
               </tr>
               <tr>
+                <td className="px-1 p-0 font-bold">TOTAL DISCOUNT</td>
+                <td className="px-1 p-0 text-right font-mono tabular-nums">{formatNumberWithCommas(discount)}</td>
+              </tr>
+              <tr>
+                <td className="px-1 p-0 font-bold">NET AMOUNT</td>
+                <td className="px-1 p-0 text-right font-mono tabular-nums">{formatNumberWithCommas(totalAmount - discount)}</td>
+              </tr>
+              <tr>
                 <td className="px-1 p-0 font-bold border-dashed border-t border-white whitespace-nowrap">PREVIOUS PAYMENTS</td>
                 <td className="px-1 p-0 text-right font-mono tabular-nums border-dashed border-t border-white">{formatNumberWithCommas(parseFloat(values.previous_paid || '0'))}</td>
               </tr>
@@ -88,9 +107,7 @@ const BillFormat = React.forwardRef<HTMLDivElement, BillFormatProps>(
                 <td className="px-1 p-0 font-bold border-dashed border-t border-white">DUE AMOUNT</td>
                 <td className="px-1 p-0 text-right font-mono tabular-nums border-dashed border-t border-white">
                   {formatNumberWithCommas(
-                    parseFloat(values.total_amount || '0') -
-                    parseFloat(values.previous_paid || '0') -
-                    parseFloat(values.paid_amount || '0')
+                    dueAmount
                   )}
                 </td>
               </tr>

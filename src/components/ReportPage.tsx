@@ -10,13 +10,15 @@ const ReportPage = () => {
   const [transactions, setTransactions] = useState<Array<ITransaction>>([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [mobile, setMobile] = useState("");
   const summaryRef = useRef<any>(null);
 
   useEffect(() => {
-    const fetchTransactions = async (start: Date, end: Date) => {
+    const fetchTransactions = async (start: Date, end: Date, mobile = '') => {
       const data = await window.electronAPI.fetchPaidByDateRange({
         start,
         end,
+        mobile
       });
       setTransactions(data);
     };
@@ -30,12 +32,12 @@ const ReportPage = () => {
       const endOfMonth = today;
       fetchTransactions(startOfMonth, endOfMonth);
     } else if (summaryType === "custom") {
-      fetchTransactions(startDate, endDate);
+      fetchTransactions(startDate, endDate, mobile);
     }
     return () => {
       setTransactions([]);
     };
-  }, [summaryType, startDate, endDate]);
+  }, [summaryType, startDate, endDate, mobile]);
 
   const handlePrintSummary = useReactToPrint({
     content: () => summaryRef.current,
@@ -72,14 +74,21 @@ const ReportPage = () => {
       {summaryType === "custom" && (
         <div className="flex justify-center mb-4">
           <input
+            type="text"
+            value={mobile}
+            placeholder="Mobile Number"
+            onChange={(e) => setMobile(e.target.value)}
+            className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-100 focus:outline-none focus:bg-blue-100 mr-4"
+          />
+          <input
             type="date"
-            value={startDate.toISOString().substr(0, 10)}
+            value={startDate.toISOString().substring(0, 10)}
             onChange={(e) => setStartDate(new Date(e.target.value))}
             className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-100 focus:outline-none focus:bg-blue-100 mr-4"
           />
           <input
             type="date"
-            value={endDate.toISOString().substr(0, 10)}
+            value={endDate.toISOString().substring(0, 10)}
             onChange={(e) => setEndDate(new Date(e.target.value))}
             className="px-4 py-2 bg-blue-100 text-black font-bold rounded-md hover:bg-blue-100 focus:outline-none focus:bg-blue-100"
           />
