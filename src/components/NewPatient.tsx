@@ -59,7 +59,7 @@ export const NewPatient = () => {
           paid_amount: "",
           payment_type: "cash",
           previous_paid: "",
-          discount_percentage: "",
+          discount: "",
         }}
         validationSchema={validationSchema}
         onSubmit={async (values, { resetForm }) => {
@@ -83,8 +83,7 @@ export const NewPatient = () => {
           }
 
           const totalAmount = parseFloat(values.total_amount || "0");
-          const discountPercentage = parseFloat(values.discount_percentage || "0");
-          const discount = (totalAmount * discountPercentage) / 100;
+          const discount = parseFloat(values.discount || "0");
           const netAmount = totalAmount - discount;
           const paidAmount = parseFloat(values.paid_amount || "0");
           const pendingAmount = netAmount - paidAmount;
@@ -183,19 +182,12 @@ export const NewPatient = () => {
                 handleBlur={handleBlur}
                 handleChange={handleChange}
                 values={values}
-                label="Amount Paid"
-                field="paid_amount"
+                label="Discount"
+                field="discount"
               />
+              
             </div>
             <div className="flex items-center justify-between">
-              <SimpleInput
-                handleBlur={handleBlur}
-                handleChange={handleChange}
-                values={values}
-                label="Discount (%)"
-                field="discount_percentage"
-              />
-            </div>
             <div className="flex flex-col">
               <label
                 htmlFor="payment_type"
@@ -214,7 +206,17 @@ export const NewPatient = () => {
                 <option value="cash">Cash</option>
                 <option value="card">Card</option>
               </select>
+              
             </div>
+            <SimpleInput
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                values={values}
+                label="Amount Paid"
+                field="paid_amount"
+              />
+            </div>
+            
             <div className="flex items-center justify-between">
               <div></div>
               <div className="flex items-center">
@@ -230,8 +232,8 @@ export const NewPatient = () => {
                 >
                   Rs.
                   {(
-                    parseFloat(values.total_amount || "0") *
-                    (1 - parseFloat(values.discount_percentage || "0") / 100) -
+                    parseFloat(values.total_amount || "0") -
+                    parseFloat(values.discount || "0") -
                     parseFloat(values.paid_amount || "0")
                   ).toLocaleString()}
                 </span>
