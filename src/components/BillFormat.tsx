@@ -2,7 +2,7 @@ import React from 'react';
 
 interface BillFormatProps {
   patient: {
-    referenceNumber: string;
+    referenceNumber?: string;
     fullname: string;
     patientRegistrationId?: string;
     mobile: string;
@@ -12,7 +12,7 @@ interface BillFormatProps {
     total_amount: string;
     paid_amount: string;
     previous_paid: string;
-    discount: string;
+    discount?: string;
     referenceNumber: string;
   };
 }

@@ -210,13 +210,15 @@ export const ExistingPatient = () => {
                   >
                     Submit
                   </button>
-                  <button
-                    type="button"
-                    onClick={handlePrint}
-                    className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
-                  >
-                    Print Bill
-                  </button>
+                  { disableSubmit &&
+                    <button
+                      type="button"
+                      onClick={handlePrint}
+                      className="w-1/2 p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer hover:bg-green-100 transition duration-300 ease-in-out transform hover:text-blue-800 font-bold"
+                    >
+                      Print Bill
+                    </button>
+                  }
                 </div>
               </form>
               <div className="hidden">
